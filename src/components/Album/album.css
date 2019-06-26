@@ -1,0 +1,16 @@
+.album__item {
+    position: relative;
+    top: 0;
+    margin: 0.5rem 0 0.75rem;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s;
+    text-align: center;
+    border: 1px solid #eee;
+    box-shadow: 0 2px 2px #ccc;
+}
+.album__item:hover {
+    top: -3px;
+    cursor: pointer;
+    transform: scale(1.05);
+    box-shadow: 2px 4px 2px #ccc;
+}
