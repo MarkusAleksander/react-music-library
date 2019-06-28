@@ -11,17 +11,17 @@ class AlbumList extends Component {
             albumData: [{
                 id: 1,
                 artist: 'Sirenia',
-                album: 'Arcane Astral Aeons',
+                title: 'Arcane Astral Aeons',
                 owned: true
             }, {
                 id: 2,
                 artist: 'Sirenia',
-                album: 'The Seventh Life Path',
+                title: 'The Seventh Life Path',
                 owned: false
             }, {
                 id: 3,
                 artist: 'Sirenia',
-                album: 'Perils Of The Deep Blue',
+                title: 'Perils Of The Deep Blue',
                 owned: true
             },
             ]
@@ -30,14 +30,25 @@ class AlbumList extends Component {
         this.updateAlbumOwnedState = this.updateAlbumOwnedState.bind(this);
     }
 
-    updateAlbumOwnedState = () => { }
+    updateAlbumOwnedState = (albumID) => {
+        let newAlbumData = this.state.albumData.map(album => {
+            if(album.id === albumID) {
+                album.owned = !album.owned;
+            }
+            return album;
+        });
+
+        this.setState({
+            albumData: newAlbumData
+        });
+    }
 
     render() {
         return (
             <ul className="album__list" >
                 {
                     this.state.albumData.map((album) => {
-                        return <Album artist={album.artist} album={album.album} owned={album.owned} onClick={this.updateAlbumOwnedState}></Album>
+                        return <Album key={album.id} artist={album.artist} title={album.title} owned={album.owned} click={() => this.updateAlbumOwnedState(album.id)}></Album>
                     })
                 }
             </ul>
