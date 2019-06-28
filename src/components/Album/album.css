@@ -1,27 +1,22 @@
 .album__item {
     position: relative;
-    top: 0;
-    margin: 0 0.75rem;
+    margin: 0.75rem 0 0;
     padding: 0.5rem 1rem;
-    transition: all 0.3s;
-    text-align: center;
+    text-align: left;
     border: 1px solid #eee;
-    box-shadow: 0 2px 2px #ccc;
+    box-shadow: 0 2px 3px #ccc;
+    width: 48%;
+    color: #000;
+}
+.album__item:last-child:nth-child(odd) {
+    width: 100%;
 }
 .album__item + .album__item {
     margin-top: 0.5rem;
 }
 .album__item--owned {
-    color: #000;
-    background-color: rgb(176, 255, 189);
+    border-color: rgb(176, 255, 189);
 }
 .album__item--required {
-    color: #fff;
-    background-color: rgb(253, 92, 92);
-}
-.album__item:hover {
-    top: -3px;
-    cursor: pointer;
-    transform: scale(1.05);
-    box-shadow: 2px 4px 2px #ccc;
+    border-color: rgb(253, 92, 92);
 }
