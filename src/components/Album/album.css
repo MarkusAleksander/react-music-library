@@ -5,14 +5,13 @@
     text-align: left;
     border: 1px solid #eee;
     box-shadow: 0 2px 3px #ccc;
-    width: 48%;
+    flex-basis: 40%;
+    flex-grow: 1;
     color: #000;
+    margin: 0.5rem;
 }
 .album__item:last-child:nth-child(odd) {
     width: 100%;
-}
-.album__item + .album__item {
-    margin-top: 0.5rem;
 }
 .album__item--owned {
     border-color: rgb(176, 255, 189);

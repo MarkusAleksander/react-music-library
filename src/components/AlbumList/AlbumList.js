@@ -31,12 +31,19 @@ class AlbumList extends Component {
     }
 
     updateAlbumOwnedState = (albumID) => {
-        let newAlbumData = this.state.albumData.map(album => {
-            if(album.id === albumID) {
-                album.owned = !album.owned;
-            }
-            return album;
+
+        let albumIndex = this.state.albumData.findIndex(a => {
+            return a.id === albumID;
         });
+
+        let album = {
+            ...this.state.albumData[albumIndex]
+        }
+
+        album.owned = !album.owned;
+
+        const newAlbumData = [...this.state.albumData];
+        newAlbumData[albumIndex] = album;
 
         this.setState({
             albumData: newAlbumData
@@ -47,9 +54,12 @@ class AlbumList extends Component {
         return (
             <ul className="album__list" >
                 {
-                    this.state.albumData.map((album) => {
+                    this.state.albumData.length > 0 ?
+                    this.state.albumData.map(album => {
                         return <Album key={album.id} artist={album.artist} title={album.title} owned={album.owned} click={() => this.updateAlbumOwnedState(album.id)}></Album>
                     })
+                    :
+                    <p>No Albums to show!</p>
                 }
             </ul>
         )
