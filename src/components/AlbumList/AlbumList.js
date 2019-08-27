@@ -2,29 +2,17 @@ import React, { Component } from 'react';
 import Album from '../Album/Album';
 import './albumlist.css';
 
+import AlbumData from '../../data/albums';
+import ArtistData from '../../data/artists';
+
 class AlbumList extends Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            albumData: [{
-                id: 1,
-                artist: 'Sirenia',
-                title: 'Arcane Astral Aeons',
-                owned: true
-            }, {
-                id: 2,
-                artist: 'Sirenia',
-                title: 'The Seventh Life Path',
-                owned: false
-            }, {
-                id: 3,
-                artist: 'Sirenia',
-                title: 'Perils Of The Deep Blue',
-                owned: true
-            },
-            ]
+            albumData: AlbumData,
+            artistData: ArtistData,
         }
 
         this.updateAlbumOwnedState = this.updateAlbumOwnedState.bind(this);
@@ -50,16 +38,25 @@ class AlbumList extends Component {
         });
     }
 
+    createAlbumItem = (albumId) => {
+        let album = this.state.albumData.find(el => {
+            return el.id === albumId;
+        });
+        let artist = this.state.artistData.find(el => {
+            return el.id === album.artistId;
+        })
+
+        return <Album key={album.id} artist={artist.artist} title={album.title} owned={album.owned} click={() => this.updateAlbumOwnedState(album.id)}></Album>
+    }
+
     render() {
         return (
             <ul className="album__list" >
                 {
                     this.state.albumData.length > 0 ?
-                    this.state.albumData.map(album => {
-                        return <Album key={album.id} artist={album.artist} title={album.title} owned={album.owned} click={() => this.updateAlbumOwnedState(album.id)}></Album>
-                    })
-                    :
-                    <p>No Albums to show!</p>
+                        this.state.albumData.map((album) => this.createAlbumItem(album.id))
+                        :
+                        <p>No Albums to show!</p>
                 }
             </ul>
         )
