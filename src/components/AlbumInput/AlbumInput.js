@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import './albumInput.css';
+//import './albumInput.css';
 import Album from '../Album/Album';
 
 import ArtistData from '../../data/artists';
+
 
 class AlbumInput extends Component {
 
@@ -38,7 +39,7 @@ class AlbumInput extends Component {
             ...this.state.newAlbumData
         };
         album.artist = event.target.value;
-        album.artistId = 0;
+        album.artistId = -1;
 
         this.setState({
             newAlbumData: album
@@ -52,7 +53,7 @@ class AlbumInput extends Component {
 
         album.artistId = Number(event.target.value);
 
-        if (album.artistId != -1) {
+        if (album.artistId !== -1) {
             let artistData = this.state.artistData.find((artist) => {
                 return artist.id === album.artistId;
             });
@@ -76,34 +77,100 @@ class AlbumInput extends Component {
         });
     }
 
+    addAlbum = (event) => {
+        event.preventDefault();
+        let newAlbum = {
+            ...this.state.newAlbumData
+        };
+
+        if(
+            newAlbum.title != '' ||
+            newAlbum.artistId != -1 ||
+            newAlbum.artist != ''
+        ) {
+
+        }
+
+        let nextAlbum = {
+            title: '',
+            artist: '',
+            owned: false,
+            artistId: -1
+        }
+
+        this.setState({
+            newAlbumData: nextAlbum
+        });
+
+        return false;
+    }
+
     render() {
         return (
-            <div>
-                <label htmlFor="album-title">Album Title:</label>
-                <input type="text" name="album-title" id="album-title" className="album__input album__input--text" onChange={this.titleChangeHandler} value={this.state.title} />
-                <label htmlFor="album-artist">Enter Artist or Select From Existing Artists:</label>
-                <input type="text" name="album-artist" id="album-artist" className="album__input album__input--text" onChange={this.artistChangeHandler} value={this.state.artist} />
-                {
-                    this.state.artistData.length ?
-                        <select onChange={this.artistIdChangeHandler}>
-                            <option value="0">Select Artist</option>
+            <div className="columns">
+                <form className="column">
+
+                    <div className="field">
+                        <label htmlFor="album-title">Album Title:</label>
+                        <div className="control">
+                            <input type="text" name="album-title" id="album-title" className="input album__input album__input--text" onChange={this.titleChangeHandler} value={this.state.newAlbumData.title} />
+                        </div>
+                    </div>
+
+                    <div className="field">
+                        <p>Enter Artist or Select From Existing Artists</p>
+                        <div className="columns">
+                            <div className="column">
+                                <label htmlFor="album-artist">Album Title:</label>
+                                <div className="control">
+                                    <input type="text" name="album-artist" id="album-artist" className="input album__input album__input--text" onChange={this.artistChangeHandler} value={this.state.newAlbumData.artist} />
+                                </div>
+                            </div>
                             {
-                                this.state.artistData.map((artist) => {
-                                    return <option value={artist.id}>{artist.artist}</option>
-                                })
+                                this.state.artistData.length ?
+                                    <div className="column">
+                                        <label>Select an existing artist</label>
+                                        <div className="control">
+                                            <div className="select">
+                                                <select onChange={this.artistIdChangeHandler}>
+                                                    <option value="-1">Select Artist</option>
+                                                    {
+                                                        this.state.artistData.map((artist) => {
+                                                            return <option key={artist.id} value={artist.id}>{artist.artist}</option>
+                                                        })
+                                                    }
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    :
+                                    null
                             }
-                        </select>
-                        :
-                        null
-                }
-                <label htmlFor="album-owned">Album is Owned:</label>
-                <input type="checkbox" name="album-owned" id="album-owned" className="album__input album__input--checkbox" onChange={this.ownedChangeHandler} value={this.state.owned} />
-                {
-                    this.state.newAlbumData.artist !== '' || this.state.newAlbumData.title !== '' ?
-                        <Album artist={this.state.newAlbumData.artist} title={this.state.newAlbumData.title} owned={this.state.newAlbumData.owned}></Album>
-                        :
-                        null
-                }
+                        </div>
+                    </div>
+
+                    <div className="field">
+                        <div className="control">
+                            <label className="checkbox">
+                                <input type="checkbox" name="album-owned" id="album-owned" className="album__input album__input--checkbox" onChange={this.ownedChangeHandler} value={this.state.newAlbumData.owned} />
+                                Is album already owned?
+                            </label>
+                        </div>
+                    </div>
+                    <div className="field">
+                        <div className="control">
+                            <button className="is-primary" onClick={this.addAlbum}>Add Album</button>
+                        </div>
+                    </div>
+                    <div className="columns">
+                        {
+                            this.state.newAlbumData.artist !== '' || this.state.newAlbumData.title !== '' ?
+                                <Album artist={this.state.newAlbumData.artist} title={this.state.newAlbumData.title} owned={this.state.newAlbumData.owned}></Album>
+                                :
+                                null
+                        }
+                    </div>
+                </form>
             </div>
         )
     }

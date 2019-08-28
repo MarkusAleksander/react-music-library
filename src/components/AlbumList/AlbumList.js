@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Album from '../Album/Album';
-import './albumlist.css';
+//import './albumlist.css';
 
 import AlbumData from '../../data/albums';
 import ArtistData from '../../data/artists';
@@ -51,14 +51,14 @@ class AlbumList extends Component {
 
     render() {
         return (
-            <ul className="album__list" >
+            <div className="album__list columns is-multiline is-vcentered" >
                 {
                     this.state.albumData.length > 0 ?
                         this.state.albumData.map((album) => this.createAlbumItem(album.id))
                         :
                         <p>No Albums to show!</p>
                 }
-            </ul>
+            </div>
         )
     }
 }
