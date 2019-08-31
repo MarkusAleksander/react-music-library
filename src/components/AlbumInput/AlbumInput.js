@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 //import './albumInput.css';
-import Album from '../Album/Album';
+import Albums from '../Albums/Albums';
 
 import ArtistData from '../../data/artists';
-
 
 class AlbumInput extends Component {
 
@@ -83,24 +82,29 @@ class AlbumInput extends Component {
             ...this.state.newAlbumData
         };
 
-        if(
-            newAlbum.title != '' ||
-            newAlbum.artistId != -1 ||
-            newAlbum.artist != ''
+        if (
+            newAlbum.title !== '' ||
+            newAlbum.artistId !== -1 ||
+            newAlbum.artist !== ''
         ) {
 
-        }
+            this.props.onAddNewAlbum({
+                artistId: newAlbum.artistId,
+                title: newAlbum.title,
+                owned: newAlbum.owned
+            });
 
-        let nextAlbum = {
-            title: '',
-            artist: '',
-            owned: false,
-            artistId: -1
-        }
+            let nextAlbum = {
+                title: '',
+                artist: '',
+                owned: false,
+                artistId: -1
+            }
 
-        this.setState({
-            newAlbumData: nextAlbum
-        });
+            this.setState({
+                newAlbumData: nextAlbum
+            });
+        }
 
         return false;
     }
@@ -108,7 +112,7 @@ class AlbumInput extends Component {
     render() {
         return (
             <div className="columns">
-                <form className="column">
+                <form className="column" onSubmit={this.addAlbum}>
 
                     <div className="field">
                         <label htmlFor="album-title">Album Title:</label>
@@ -159,13 +163,13 @@ class AlbumInput extends Component {
                     </div>
                     <div className="field">
                         <div className="control">
-                            <button className="is-primary" onClick={this.addAlbum}>Add Album</button>
+                            <button className="is-primary">Add Album</button>
                         </div>
                     </div>
                     <div className="columns">
                         {
                             this.state.newAlbumData.artist !== '' || this.state.newAlbumData.title !== '' ?
-                                <Album artist={this.state.newAlbumData.artist} title={this.state.newAlbumData.title} owned={this.state.newAlbumData.owned}></Album>
+                                <Albums albums={[this.state.newAlbumData]}></Albums>
                                 :
                                 null
                         }

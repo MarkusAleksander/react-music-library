@@ -1,18 +1,18 @@
-import React, { Component } from 'react';
-import Album from '../Album/Album';
-//import './albumlist.css';
+import React from 'react';
+import Album from './Album/Album';
+//import './Albums.css';
 
-import AlbumData from '../../data/albums';
-import ArtistData from '../../data/artists';
+//import AlbumData from '../../data/albums';
+//import ArtistData from '../../data/artists';
 
-class AlbumList extends Component {
+/*class Albums extends Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            albumData: AlbumData,
-            artistData: ArtistData,
+            albumData: this.props.albumData || [],
+            artistData: this.props.artistData || [],
         }
 
         this.updateAlbumOwnedState = this.updateAlbumOwnedState.bind(this);
@@ -62,5 +62,19 @@ class AlbumList extends Component {
         )
     }
 }
+*/
 
-export default AlbumList;
+const Albums = (props) => (
+    props.albums.length > 0 ?
+        <div className="album__list columns is-multiline is-vcentered">
+            {
+                props.albums.map((album) => (
+                    <Album key={album.id} artistId={album.artistId} title={album.title} owned={album.owned} /* click={() => this.updateAlbumOwnedState(album.id)} */></Album>
+                ))
+            }
+        </div>
+        :
+        <p>No Albums to show!</p>
+)
+
+export default Albums;
