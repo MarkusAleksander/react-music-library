@@ -30,12 +30,29 @@ class App extends Component {
         });
     }
 
+    updateOwnedState = (albumID) => {
+        let allAlbums = [...this.state.albumData];
+
+        let albumToUpdateIndex = allAlbums.findIndex(function findAlbum(album) {
+            return album.id == albumID;
+        });
+
+        if (albumToUpdateIndex > -1) {
+            allAlbums[albumToUpdateIndex].owned = !allAlbums[albumToUpdateIndex].owned;
+
+            this.setState({
+                albumData: allAlbums
+            });
+        }
+
+    }
+
     render() {
 
         return (
             <div className="App section" >
                 <div className="container">
-                    <Albums albums={this.state.albumData} />
+                    <Albums albums={this.state.albumData} clicked={this.updateOwnedState} />
                 </div>
                 <div className="container">
                     <AlbumInput onAddNewAlbum={this.addNewAlbum} />
