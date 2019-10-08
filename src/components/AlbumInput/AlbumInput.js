@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 //import './albumInput.css';
 import Albums from '../Albums/Albums';
 
+import InputSelection from './InputSelect/InputSelect.js';
+
 import ArtistData from '../../data/artists';
 
 class AlbumInput extends Component {
@@ -33,16 +35,25 @@ class AlbumInput extends Component {
     }
 
     artistChangeHandler = (event) => {
-
         let album = {
             ...this.state.newAlbumData
         };
-        album.artist = event.target.value;
-        album.artistId = -1;
+        album.artist = event.target.value || event.target.getAttribute('data-value');
 
-        this.setState({
-            newAlbumData: album
-        });
+        if(album.artist) {
+            // * Check if artist already exists
+            let artistDataIndex = this.state.artistData.findIndex(data => album.artist.toLowerCase().trim() === data.artist.toLowerCase().trim());
+
+            if (artistDataIndex > -1) {
+                album.artistId = this.state.artistData[artistDataIndex].id;
+            } else {
+                album.artistId = -1;
+            }
+
+            this.setState({
+                newAlbumData: album
+            });
+        }
     }
 
     artistIdChangeHandler = (event) => {
@@ -112,6 +123,7 @@ class AlbumInput extends Component {
     render() {
         return (
             <div className="columns">
+                <h2>Add a new album:</h2>
                 <form className="column" onSubmit={this.addAlbum}>
 
                     <div className="field">
@@ -125,31 +137,8 @@ class AlbumInput extends Component {
                         <p>Enter Artist or Select From Existing Artists</p>
                         <div className="columns">
                             <div className="column">
-                                <label htmlFor="album-artist">Album Title:</label>
-                                <div className="control">
-                                    <input type="text" name="album-artist" id="album-artist" className="input album__input album__input--text" onChange={this.artistChangeHandler} value={this.state.newAlbumData.artist} />
-                                </div>
+                                <InputSelection onUpdate={this.artistChangeHandler} artistData={this.state.artistData} newArtist={this.state.newAlbumData.artist}></InputSelection>
                             </div>
-                            {
-                                this.state.artistData.length ?
-                                    <div className="column">
-                                        <label>Select an existing artist</label>
-                                        <div className="control">
-                                            <div className="select">
-                                                <select onChange={this.artistIdChangeHandler}>
-                                                    <option value="-1">Select Artist</option>
-                                                    {
-                                                        this.state.artistData.map((artist) => {
-                                                            return <option key={artist.id} value={artist.id}>{artist.artist}</option>
-                                                        })
-                                                    }
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    :
-                                    null
-                            }
                         </div>
                     </div>
 

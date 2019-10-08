@@ -1,0 +1,20 @@
+.album-dropdown {
+    position: relative;
+}
+
+.album-dropdown > div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    z-index: 10;
+    box-sizing: 1px 1px 2px #333;
+}
+.album-dropdown__item {
+    padding: 8px;
+    text-align: left;
+}
+.album-dropdown__item:hover {
+    background-color: rgba(120,120,240,0.3);
+}

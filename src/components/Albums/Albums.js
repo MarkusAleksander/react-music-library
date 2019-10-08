@@ -9,6 +9,7 @@ const Albums = (props) => (
                     <Album
                         key={album.id}
                         artistId={album.artistId}
+                        artist={album.artist}
                         title={album.title}
                         owned={album.owned}
                         key={album.id}

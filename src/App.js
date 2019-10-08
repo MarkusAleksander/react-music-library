@@ -34,7 +34,7 @@ class App extends Component {
         let allAlbums = [...this.state.albumData];
 
         let albumToUpdateIndex = allAlbums.findIndex(function findAlbum(album) {
-            return album.id == albumID;
+            return album.id === albumID;
         });
 
         if (albumToUpdateIndex > -1) {
@@ -44,15 +44,27 @@ class App extends Component {
                 albumData: allAlbums
             });
         }
-
     }
 
     render() {
 
+        let d = this.state.artistData;
+        let combinedAlbumArtistData = this.state.albumData.map(function (album) {
+            let albumCopy = Object.assign({}, album);
+            let artistIndex = d.findIndex(function (artist) { return artist.id === album.artistId });
+
+            if (artistIndex > -1) {
+                albumCopy.artist = ArtistData[artistIndex].artist;
+            }
+
+            return albumCopy;
+
+        });
+
         return (
             <div className="App section" >
                 <div className="container">
-                    <Albums albums={this.state.albumData} clicked={this.updateOwnedState} />
+                    <Albums albums={combinedAlbumArtistData} clicked={this.updateOwnedState} />
                 </div>
                 <div className="container">
                     <AlbumInput onAddNewAlbum={this.addNewAlbum} />
