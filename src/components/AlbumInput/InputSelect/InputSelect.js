@@ -24,19 +24,17 @@ const InputSelect = (props) => {
     }
 
     const onFocus = () => {
-        console.log('focused');
         filterArtists();
     }
 
     const onBlur = () => {
-        console.log('blurred');
         window.setTimeout(() => {
             clearFilteredArtists();
         }, 250);
     }
 
     return (
-        <div className="column">
+        <div className="field">
             <label htmlFor="album-artist">Artist Title:</label>
             <div className="control">
                 <input type="text" name="album-artist" id="album-artist" className="input album__input album__input--text" onFocus={onFocus} onBlur={onBlur} onChange={props.onUpdate} value={props.newArtist} autoComplete="off" />

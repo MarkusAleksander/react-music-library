@@ -3,7 +3,7 @@ import Album from './Album/Album';
 
 const Albums = (props) => (
     props.albums.length > 0 ?
-        <div className="album__list columns is-multiline is-vcentered">
+        <div className="album__list columns is-mobile is-multiline is-vcentered">
             {
                 props.albums.map((album) => (
                     <Album
@@ -12,7 +12,8 @@ const Albums = (props) => (
                         artist={album.artist}
                         title={album.title}
                         owned={album.owned}
-                        click={() => props.clicked(album.id)}></Album>
+                        click={() => props.clicked(album.id)}
+                        layoutClassOptions={"column is-6-mobile is-4-tablet is-3-desktop"}></Album>
                 ))
             }
         </div>

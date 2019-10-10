@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 //import './albumInput.css';
-import Albums from '../Albums/Albums';
+import Album from '../Albums/Album/Album';
 
 import InputSelection from './InputSelect/InputSelect.js';
 
@@ -14,7 +14,8 @@ class AlbumInput extends Component {
                 title: '',
                 artist: '',
                 owned: false,
-                artistId: -1
+                artistId: -1,
+                id: 0
             }
         }
     }
@@ -35,9 +36,9 @@ class AlbumInput extends Component {
         let album = {
             ...this.state.newAlbumData
         };
-        album.artist = event.target.value || event.target.getAttribute('data-value');
+        album.artist = event.target.nodeName === "INPUT" ? event.target.value : event.target.getAttribute('data-value');
 
-        if (album.artist) {
+        if (typeof album.artist === "string") {
             // * Check if artist already exists
             let artistDataIndex = this.props.artistData.findIndex(data => album.artist.toLowerCase().trim() === data.artist.toLowerCase().trim());
 
@@ -121,8 +122,9 @@ class AlbumInput extends Component {
     render() {
         return (
             <div className="columns">
-                <h2>Add a new album:</h2>
                 <form className="column" onSubmit={this.addAlbum}>
+
+                    <h2 className="is-size-4">Add a new album:</h2>
 
                     <div className="field">
                         <label htmlFor="album-title">Album Title:</label>
@@ -131,14 +133,7 @@ class AlbumInput extends Component {
                         </div>
                     </div>
 
-                    <div className="field">
-                        <p>Enter Artist or Select From Existing Artists</p>
-                        <div className="columns">
-                            <div className="column">
-                                <InputSelection onUpdate={this.artistChangeHandler} artistData={this.props.artistData} newArtist={this.state.newAlbumData.artist}></InputSelection>
-                            </div>
-                        </div>
-                    </div>
+                    <InputSelection onUpdate={this.artistChangeHandler} artistData={this.props.artistData} newArtist={this.state.newAlbumData.artist}></InputSelection>
 
                     <div className="field">
                         <div className="control">
@@ -148,20 +143,28 @@ class AlbumInput extends Component {
                             </label>
                         </div>
                     </div>
+
                     <div className="field">
                         <div className="control">
-                            <button className="is-primary">Add Album</button>
+                            <button className="button is-primary">Add Album</button>
                         </div>
                     </div>
-                    <div className="columns">
-                        {
-                            this.state.newAlbumData.artist !== '' || this.state.newAlbumData.title !== '' ?
-                                <Albums albums={[this.state.newAlbumData]}></Albums>
-                                :
-                                null
-                        }
-                    </div>
                 </form>
+
+                <div className="column">
+                    {
+                        this.state.newAlbumData.artist !== '' || this.state.newAlbumData.title !== '' ?
+                            <Album
+                                key={this.state.newAlbumData.id}
+                                artistId={this.state.newAlbumData.artistId}
+                                artist={this.state.newAlbumData.artist}
+                                title={this.state.newAlbumData.title}
+                                owned={this.state.newAlbumData.owned}
+                                layoutClassOptions={""}></Album>
+                            :
+                            null
+                    }
+                </div>
             </div>
         )
     }

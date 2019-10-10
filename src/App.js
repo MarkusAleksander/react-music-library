@@ -81,14 +81,18 @@ class App extends Component {
             return albumCopy;
 
         });
-        console.log('rerendered');
+
         return (
-            <div className="App section" >
-                <div className="container">
-                    <Albums albums={combinedAlbumArtistData} clicked={this.updateOwnedState} />
+            <div className="App" >
+                <div className="section">
+                    <div className="container">
+                        <Albums albums={combinedAlbumArtistData} clicked={this.updateOwnedState} />
+                    </div>
                 </div>
-                <div className="container">
-                    <AlbumInput onAddNewAlbum={this.addNewAlbum} artistData={this.state.artistData} />
+                <div className="section">
+                    <div className="container">
+                        <AlbumInput onAddNewAlbum={this.addNewAlbum} artistData={this.state.artistData} />
+                    </div>
                 </div>
             </div>
         );
