@@ -19,14 +19,35 @@ class App extends Component {
     }
 
     addNewAlbum = (newAlbum) => {
+        if (newAlbum.artistId === -1) {
+            let newArtists = [...this.state.artistData];
+
+            let newId = newArtists[newArtists.length - 1].id + 1;
+            newArtists.push({
+                id: newId,
+                artist: newAlbum.artist
+            });
+
+            newAlbum.artistId = newId;
+
+            this.setState({
+                artistData: newArtists
+            });
+        }
+
         let newAlbums = [...this.state.albumData];
 
         let newId = newAlbums[newAlbums.length - 1].id + 1;
 
-        newAlbums.push(Object.assign(newAlbum, { id: newId }));
+        newAlbums.push({
+            id: newId,
+            artistId: newAlbum.artistId,
+            title: newAlbum.title,
+            owned: newAlbum.owned
+        });
 
         this.setState({
-            albumData: newAlbums
+            albumData: newAlbums,
         });
     }
 
@@ -54,20 +75,20 @@ class App extends Component {
             let artistIndex = d.findIndex(function (artist) { return artist.id === album.artistId });
 
             if (artistIndex > -1) {
-                albumCopy.artist = ArtistData[artistIndex].artist;
+                albumCopy.artist = d[artistIndex].artist;
             }
 
             return albumCopy;
 
         });
-
+        console.log('rerendered');
         return (
             <div className="App section" >
                 <div className="container">
                     <Albums albums={combinedAlbumArtistData} clicked={this.updateOwnedState} />
                 </div>
                 <div className="container">
-                    <AlbumInput onAddNewAlbum={this.addNewAlbum} />
+                    <AlbumInput onAddNewAlbum={this.addNewAlbum} artistData={this.state.artistData} />
                 </div>
             </div>
         );

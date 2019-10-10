@@ -4,8 +4,6 @@ import Albums from '../Albums/Albums';
 
 import InputSelection from './InputSelect/InputSelect.js';
 
-import ArtistData from '../../data/artists';
-
 class AlbumInput extends Component {
 
     constructor(props) {
@@ -17,8 +15,7 @@ class AlbumInput extends Component {
                 artist: '',
                 owned: false,
                 artistId: -1
-            },
-            artistData: ArtistData
+            }
         }
     }
 
@@ -40,12 +37,12 @@ class AlbumInput extends Component {
         };
         album.artist = event.target.value || event.target.getAttribute('data-value');
 
-        if(album.artist) {
+        if (album.artist) {
             // * Check if artist already exists
-            let artistDataIndex = this.state.artistData.findIndex(data => album.artist.toLowerCase().trim() === data.artist.toLowerCase().trim());
+            let artistDataIndex = this.props.artistData.findIndex(data => album.artist.toLowerCase().trim() === data.artist.toLowerCase().trim());
 
             if (artistDataIndex > -1) {
-                album.artistId = this.state.artistData[artistDataIndex].id;
+                album.artistId = this.props.artistData[artistDataIndex].id;
             } else {
                 album.artistId = -1;
             }
@@ -64,7 +61,7 @@ class AlbumInput extends Component {
         album.artistId = Number(event.target.value);
 
         if (album.artistId !== -1) {
-            let artistData = this.state.artistData.find((artist) => {
+            let artistData = this.props.artistData.find((artist) => {
                 return artist.id === album.artistId;
             });
             album.artist = artistData.artist;
@@ -101,6 +98,7 @@ class AlbumInput extends Component {
 
             this.props.onAddNewAlbum({
                 artistId: newAlbum.artistId,
+                artist: newAlbum.artist,
                 title: newAlbum.title,
                 owned: newAlbum.owned
             });
@@ -137,7 +135,7 @@ class AlbumInput extends Component {
                         <p>Enter Artist or Select From Existing Artists</p>
                         <div className="columns">
                             <div className="column">
-                                <InputSelection onUpdate={this.artistChangeHandler} artistData={this.state.artistData} newArtist={this.state.newAlbumData.artist}></InputSelection>
+                                <InputSelection onUpdate={this.artistChangeHandler} artistData={this.props.artistData} newArtist={this.state.newAlbumData.artist}></InputSelection>
                             </div>
                         </div>
                     </div>
@@ -145,7 +143,7 @@ class AlbumInput extends Component {
                     <div className="field">
                         <div className="control">
                             <label className="checkbox">
-                                <input type="checkbox" name="album-owned" id="album-owned" className="album__input album__input--checkbox" onChange={this.ownedChangeHandler} value={this.state.newAlbumData.owned} />
+                                <input type="checkbox" name="album-owned" id="album-owned" className="album__input album__input--checkbox" onChange={this.ownedChangeHandler} checked={this.state.newAlbumData.owned} />
                                 Is album already owned?
                             </label>
                         </div>

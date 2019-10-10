@@ -12,7 +12,6 @@ const Albums = (props) => (
                         artist={album.artist}
                         title={album.title}
                         owned={album.owned}
-                        key={album.id}
                         click={() => props.clicked(album.id)}></Album>
                 ))
             }
