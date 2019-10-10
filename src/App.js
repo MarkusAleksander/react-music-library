@@ -18,7 +18,15 @@ class App extends Component {
         }
     }
 
+    sanitiseText = (text) => {
+        return text.trim().toLowerCase();
+    }
+
     addNewAlbum = (newAlbum) => {
+
+        // * CHeck if we already have the album added
+        let duplicateArtist;
+
         if (newAlbum.artistId === -1) {
             let newArtists = [...this.state.artistData];
 

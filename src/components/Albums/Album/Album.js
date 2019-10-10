@@ -3,7 +3,7 @@ import './album.css';
 
 const Album = (props) => {
     return (
-        <div onClick={props.click} className={'album__item has-background-grey-white has-text-black ' + props.layoutClassOptions}>
+        <div onClick={props.click} className={'album__item has-background-grey-white has-text-centered has-text-black ' + props.layoutClassOptions}>
             <div className="card">
                 <div className="card-image">
                     <img alt={props.title} src="https://2fnwas1oea9y31r31yme9a19-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/Ihsahn-820x820.jpg" />

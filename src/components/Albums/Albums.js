@@ -3,7 +3,7 @@ import Album from './Album/Album';
 
 const Albums = (props) => (
     props.albums.length > 0 ?
-        <div className="album__list columns is-mobile is-multiline is-vcentered">
+        <div className="album__list columns is-mobile is-multiline">
             {
                 props.albums.map((album) => (
                     <Album
