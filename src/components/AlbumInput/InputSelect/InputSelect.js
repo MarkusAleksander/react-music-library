@@ -4,55 +4,55 @@ import './inputSelect.css';
 const InputSelect = (props) => {
 
     const [inputState, setInputState] = useState({
-        filteredArtists: [],
+        filteredData: [],
         showDropdown: false
     });
 
-    const filterArtists = (userInput) => {
+    const filterData = (userInput) => {
         if(userInput === "") {
             let newData = Object.assign({}, inputState);
-            newData.filteredArtists = [];
+            newData.filteredData = [];
             setInputState(newData);
         } else {
-            let filteredArtists = props.artistData.map((artist) => {
-                if(artist.artist.toLowerCase().trim().indexOf(userInput.toLowerCase().trim()) > -1) {
-                    return <div className="album-dropdown__item" key={artist.id} onClick={props.onUpdate} data-value={artist.artist}>{artist.artist}</div>
+            let filteredData = props.data.map((data) => {
+                if(data[props.dataTitle].toLowerCase().trim().indexOf(userInput.toLowerCase().trim()) > -1) {
+                    return <div className="album-dropdown__item" key={data.id} onClick={props.onUpdate} data-value={data[props.dataTitle]}>{data[props.dataTitle]}</div>
                 }
             });
             let newData = Object.assign({}, inputState);
-            newData.filteredArtists = filteredArtists;
+            newData.filteredData = filteredData;
             setInputState(newData);
         }
     }
 
-    const clearFilteredArtists = () => {
+    const clearfilteredData = () => {
         let newData = Object.assign({}, inputState);
-        newData.filteredArtists = [];
+        newData.filteredData = [];
         setInputState(newData);
     }
 
     const onChange = (event) => {
-        filterArtists(event.target.value);
+        filterData(event.target.value);
         props.onUpdate(event);
     }
 
     const onBlur = () => {
         window.setTimeout(() => {
-            clearFilteredArtists();
+            clearfilteredData();
         }, 250);
     }
 
     return (
         <div className="field">
-            <label htmlFor="album-artist">Artist Title:</label>
+            <label htmlFor={"album-" + props.dataTitle}>{props.dataTitle} Title:</label>
             <div className="control">
-                <input type="text" name="album-artist" id="album-artist" className="input album__input album__input--text" onBlur={onBlur} onChange={onChange} value={props.newArtist} autoComplete="off" />
+                <input type="text" name={"album-" + props.dataTitle} id={"album-" + props.dataTitle} className="input album__input album__input--text" onBlur={onBlur} onChange={onChange} value={props.newData} autoComplete="off" />
             </div>
             <div className="album-dropdown">
                 {
-                    inputState.filteredArtists.length ?
+                    inputState.filteredData.length ?
                         <div>
-                            {inputState.filteredArtists}
+                            {inputState.filteredData}
                         </div>
                         : null
                 }

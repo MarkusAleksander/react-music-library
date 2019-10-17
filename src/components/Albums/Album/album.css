@@ -3,10 +3,12 @@
 }
 
 .card {
-	transition: box-shadow 0.3s ease-in-out;
+    transform: scale(1);
+	transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 .card:hover {
-	box-shadow: 2px 3px 5px #ccc;
+    box-shadow: 2px 3px 5px #ccc;
+    transform: scale(1.05);
 }
 
 .card-delete-btn {

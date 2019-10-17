@@ -25,11 +25,22 @@ class AlbumInput extends Component {
         let album = {
             ...this.state.newAlbumData
         };
-        album.title = event.target.value;
+        album.title = event.target.nodeName === "INPUT" ? event.target.value : event.target.getAttribute('data-value');
 
-        this.setState({
-            newAlbumData: album
-        });
+        if (typeof album.artist === "string") {
+            // * Check if artist already exists
+            let albumDataIndex = this.props.albumData.findIndex(data => album.title.toLowerCase().trim() === data.title.toLowerCase().trim());
+
+            if (albumDataIndex > -1) {
+                album.artistId = this.props.albumData[albumDataIndex].id;
+            } else {
+                album.artistId = -1;
+            }
+
+            this.setState({
+                newAlbumData: album
+            });
+        }
     }
 
     artistChangeHandler = (event) => {
@@ -126,14 +137,9 @@ class AlbumInput extends Component {
 
                     <h2 className="is-size-4">Add a new album:</h2>
 
-                    <div className="field">
-                        <label htmlFor="album-title">Album Title:</label>
-                        <div className="control">
-                            <input type="text" name="album-title" id="album-title" className="input album__input album__input--text" onChange={this.titleChangeHandler} value={this.state.newAlbumData.title} />
-                        </div>
-                    </div>
+                    <InputSelection onUpdate={this.titleChangeHandler} data={this.props.albumData} dataTitle={"title"} newData={this.state.newAlbumData.title}></InputSelection>
 
-                    <InputSelection onUpdate={this.artistChangeHandler} artistData={this.props.artistData} newArtist={this.state.newAlbumData.artist}></InputSelection>
+                    <InputSelection onUpdate={this.artistChangeHandler} data={this.props.artistData} dataTitle={"artist"} newData={this.state.newAlbumData.artist}></InputSelection>
 
                     <div className="field">
                         <div className="control">

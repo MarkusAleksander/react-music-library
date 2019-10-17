@@ -23,9 +23,13 @@ class App extends Component {
     }
 
     addNewAlbum = (newAlbum) => {
+        // * Check if we already have the album added
+        let duplicateAlbumId = this.state.albumData.findIndex((album) => {
+            return (newAlbum.artistId === album.artistId) && (newAlbum.title === album.title);
+        });
 
-        // * CHeck if we already have the album added
-        let duplicateArtist;
+        // * If found, don't continue
+        if(duplicateAlbumId > -1) return;
 
         if (newAlbum.artistId === -1) {
             let newArtists = [...this.state.artistData];
@@ -110,7 +114,7 @@ class App extends Component {
                 </div>
                 <div className="section">
                     <div className="container">
-                        <AlbumInput onAddNewAlbum={this.addNewAlbum} artistData={this.state.artistData} />
+                        <AlbumInput onAddNewAlbum={this.addNewAlbum} artistData={this.state.artistData} albumData={this.state.albumData} />
                     </div>
                 </div>
             </div>
