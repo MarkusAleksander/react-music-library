@@ -1,3 +1,54 @@
 .album__item {
 	user-select: none;
 }
+
+.card {
+	transition: box-shadow 0.3s ease-in-out;
+}
+.card:hover {
+	box-shadow: 2px 3px 5px #ccc;
+}
+
+.card-delete-btn {
+	position: absolute;
+	top: -5px;
+	right: -5px;
+	width: 30px;
+	height: 30px;
+	background-color: #fff;
+	border-radius: 50%;
+	box-shadow: 1px 1px 3px #ccc;
+	z-index: 1;
+	font-weight: bold;
+	cursor: pointer;
+	box-shadow: 1px 1px 2px #ccc;
+	transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+	transform: scale(1);
+}
+.card-delete-btn:after {
+	content: "\2715";
+	font-size: 1.2em;
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	top: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transform: rotateZ(0);
+	transition: transform 0.3s ease-in-out;
+}
+
+.card-delete-btn:hover {
+	box-shadow: 1px 1px 3px #ccc;
+	transform: scale(1.1);
+}
+
+.card-delete-btn:hover:after {
+	transform: rotateZ(180deg);
+}
+
+.card-footer.card-footer--selectable {
+	cursor: pointer;
+}

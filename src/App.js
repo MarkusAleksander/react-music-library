@@ -59,7 +59,7 @@ class App extends Component {
         });
     }
 
-    updateOwnedState = (albumID) => {
+    updateAlbumState = (albumID, updateType) => {
         let allAlbums = [...this.state.albumData];
 
         let albumToUpdateIndex = allAlbums.findIndex(function findAlbum(album) {
@@ -67,7 +67,18 @@ class App extends Component {
         });
 
         if (albumToUpdateIndex > -1) {
-            allAlbums[albumToUpdateIndex].owned = !allAlbums[albumToUpdateIndex].owned;
+
+            switch (updateType) {
+                case "changeOwnedData":
+                    allAlbums[albumToUpdateIndex].owned = !allAlbums[albumToUpdateIndex].owned;
+                    break;
+                case "removeAlbum":
+                    allAlbums.splice(albumToUpdateIndex, 1);
+                    break;
+                default:
+                    break;
+            }
+
 
             this.setState({
                 albumData: allAlbums
@@ -94,7 +105,7 @@ class App extends Component {
             <div className="App" >
                 <div className="section">
                     <div className="container">
-                        <Albums albums={combinedAlbumArtistData} clicked={this.updateOwnedState} />
+                        <Albums albums={combinedAlbumArtistData} clicked={this.updateAlbumState} />
                     </div>
                 </div>
                 <div className="section">
