@@ -6,7 +6,7 @@ const Album = (props) => {
         <div onClick={props.click} className={'album__item has-background-grey-white has-text-centered has-text-black ' + props.layoutClassOptions}>
             <div className="card">
                 <div className="card-image">
-                    <img alt={props.title} src="https://2fnwas1oea9y31r31yme9a19-wpengine.netdna-ssl.com/wp-content/uploads/2018/04/Ihsahn-820x820.jpg" />
+                    <img alt={props.title} src="https://dummyimage.com/820/b5b5b5/fff.jpg" />
                 </div>
                 <div className="card-content">
                     <p className="is-size-6-touch is-size-5-desktop">{props.title}</p>
