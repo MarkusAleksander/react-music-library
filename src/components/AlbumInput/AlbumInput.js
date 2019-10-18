@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import Album from '../Albums/Album/Album';
 
 import InputSelection from './InputSelect/InputSelect.js';
+import InputCheckbox from './InputCheckbox/InputCheckbox.js';
 
 class AlbumInput extends Component {
 
@@ -132,44 +133,40 @@ class AlbumInput extends Component {
 
     render() {
         return (
-            <div className="columns">
-                <form className="column" onSubmit={this.addAlbum}>
+            <div className="section">
+                <div className="container">
+                    <div className="columns">
+                        <form className="column" onSubmit={this.addAlbum}>
 
-                    <h2 className="is-size-4">Add a new album:</h2>
+                            <h2 className="is-size-4">Add a new album:</h2>
 
-                    <InputSelection onUpdate={this.titleChangeHandler} data={this.props.albumData} dataTitle={"title"} newData={this.state.newAlbumData.title}></InputSelection>
+                            <InputSelection onUpdate={this.titleChangeHandler} data={this.props.albumData} dataTitle={"title"} newData={this.state.newAlbumData.title}></InputSelection>
+                            <InputSelection onUpdate={this.artistChangeHandler} data={this.props.artistData} dataTitle={"artist"} newData={this.state.newAlbumData.artist}></InputSelection>
+                            <InputCheckbox onChangeHandler={this.ownedChangeHandler} isChecked={this.state.newAlbumData.owned} />
 
-                    <InputSelection onUpdate={this.artistChangeHandler} data={this.props.artistData} dataTitle={"artist"} newData={this.state.newAlbumData.artist}></InputSelection>
+                            <div className="field">
+                                <div className="control">
+                                    <button className="button is-primary">Add Album</button>
+                                </div>
+                            </div>
 
-                    <div className="field">
-                        <div className="control">
-                            <label className="checkbox">
-                                <input type="checkbox" name="album-owned" id="album-owned" className="album__input album__input--checkbox" onChange={this.ownedChangeHandler} checked={this.state.newAlbumData.owned} />
-                                Is album already owned?
-                            </label>
+                        </form>
+
+                        <div className="column">
+                            {
+                                this.state.newAlbumData.artist !== '' || this.state.newAlbumData.title !== '' ?
+                                    <Album
+                                        key={this.state.newAlbumData.id}
+                                        artistId={this.state.newAlbumData.artistId}
+                                        artist={this.state.newAlbumData.artist}
+                                        title={this.state.newAlbumData.title}
+                                        owned={this.state.newAlbumData.owned}
+                                        layoutClassOptions={""}></Album>
+                                    :
+                                    null
+                            }
                         </div>
                     </div>
-
-                    <div className="field">
-                        <div className="control">
-                            <button className="button is-primary">Add Album</button>
-                        </div>
-                    </div>
-                </form>
-
-                <div className="column">
-                    {
-                        this.state.newAlbumData.artist !== '' || this.state.newAlbumData.title !== '' ?
-                            <Album
-                                key={this.state.newAlbumData.id}
-                                artistId={this.state.newAlbumData.artistId}
-                                artist={this.state.newAlbumData.artist}
-                                title={this.state.newAlbumData.title}
-                                owned={this.state.newAlbumData.owned}
-                                layoutClassOptions={""}></Album>
-                            :
-                            null
-                    }
                 </div>
             </div>
         )

@@ -3,6 +3,7 @@ import './album.css';
 
 const Album = (props) => {
     return (
+
         <div className={'album__item has-background-grey-white has-text-centered has-text-black ' + props.layoutClassOptions}>
             <div className="card">
                 {

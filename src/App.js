@@ -125,16 +125,8 @@ class App extends Component {
                     this.state.hasErrored ?
                         <ErrorMessage onButtonClick={this.toggleErrorMessage} /> : null
                 }
-                <div className="section">
-                    <div className="container">
-                        <Albums albums={combinedAlbumArtistData} clicked={this.updateAlbumState} />
-                    </div>
-                </div>
-                <div className="section">
-                    <div className="container">
-                        <AlbumInput onAddNewAlbum={this.addNewAlbum} artistData={this.state.artistData} albumData={this.state.albumData} />
-                    </div>
-                </div>
+                <Albums albums={combinedAlbumArtistData} clicked={this.updateAlbumState} />
+                <AlbumInput onAddNewAlbum={this.addNewAlbum} artistData={this.state.artistData} albumData={this.state.albumData} />
             </div>
         );
     }
