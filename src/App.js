@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Albums from './components/Albums/Albums';
 import AlbumInput from './components/AlbumInput/AlbumInput';
+import ErrorMessage from './components/ErrorMessage/ErrorMessage';
 //import './App.css';
 import 'bulma/css/bulma.css';
 
@@ -14,12 +15,23 @@ class App extends Component {
 
         this.state = {
             albumData: AlbumData,
-            artistData: ArtistData
+            artistData: ArtistData,
+            hasErrored: false
         }
     }
 
     sanitiseText = (text) => {
         return text.trim().toLowerCase();
+    }
+
+    toggleErrorMessage = () => {
+        this.setState({
+            hasErrored: !this.state.hasErrored
+        });
+    }
+
+    closeErrorMessage = () => {
+        this.setErrorState(false);
     }
 
     addNewAlbum = (newAlbum) => {
@@ -29,7 +41,10 @@ class App extends Component {
         });
 
         // * If found, don't continue
-        if(duplicateAlbumId > -1) return;
+        if (duplicateAlbumId > -1) {
+            this.toggleErrorMessage();
+            return;
+        }
 
         if (newAlbum.artistId === -1) {
             let newArtists = [...this.state.artistData];
@@ -83,7 +98,6 @@ class App extends Component {
                     break;
             }
 
-
             this.setState({
                 albumData: allAlbums
             });
@@ -107,6 +121,10 @@ class App extends Component {
 
         return (
             <div className="App" >
+                {
+                    this.state.hasErrored ?
+                        <ErrorMessage onButtonClick={this.toggleErrorMessage} /> : null
+                }
                 <div className="section">
                     <div className="container">
                         <Albums albums={combinedAlbumArtistData} clicked={this.updateAlbumState} />
