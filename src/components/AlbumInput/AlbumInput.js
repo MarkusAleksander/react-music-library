@@ -158,7 +158,7 @@ class AlbumInput extends Component {
             <div className="section">
                 <div className="container">
                     <div className="columns">
-                        <form className="column" onSubmit={this.addAlbum}>
+                        <form className="column is-12-mobile is-6-tablet is-6-desktop" onSubmit={this.addAlbum}>
 
                             <h2 className="is-size-4">Add a new album:</h2>
 
@@ -175,7 +175,7 @@ class AlbumInput extends Component {
 
                         </form>
 
-                        <div className="column">
+                        <div className="column is-12-mobile is-4-tablet is-4-desktop is-offset-1-tablet is-offset-1-desktop">
                             {
                                 this.state.newAlbumData.artist !== '' || this.state.newAlbumData.title !== '' ?
                                     <Album

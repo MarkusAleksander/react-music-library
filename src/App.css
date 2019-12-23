@@ -1,0 +1,8 @@
+.exporter-buttons {
+	position: fixed;
+	z-index: 101;
+	top: 0;
+	right: 0;
+	padding: 0.75rem;
+	text-align: right;
+}

@@ -4,9 +4,13 @@ import AlbumInput from './components/AlbumInput/AlbumInput';
 import ErrorMessage from './components/ErrorMessage/ErrorMessage';
 //import './App.css';
 import 'bulma/css/bulma.css';
+import './App.css';
 
 import AlbumData from './data/albums.js';
 import ArtistData from './data/artists.js';
+
+import Exporter from './components/Exporter/Exporter.js';
+import ExporterDetail from './components/Exporter/ExporterDetail.js';
 
 class App extends Component {
 
@@ -128,6 +132,10 @@ class App extends Component {
                     this.state.hasErrored ?
                         <ErrorMessage onButtonClick={this.toggleErrorMessage} errorMessage={this.state.errorMessage} /> : null
                 }
+                <div class="exporter-buttons">
+                    <Exporter data={this.state.artistData} detailName="Artist" />
+                    <Exporter data={this.state.albumData} detailName="Album" />
+                </div>
                 <Albums albums={combinedAlbumArtistData} clicked={this.updateAlbumState} />
                 <AlbumInput onAddNewAlbum={this.addNewAlbum} artistData={this.state.artistData} albumData={this.state.albumData} />
             </div>
