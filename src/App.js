@@ -10,7 +10,6 @@ import AlbumData from './data/albums.js';
 import ArtistData from './data/artists.js';
 
 import Exporter from './components/Exporter/Exporter.js';
-import ExporterDetail from './components/Exporter/ExporterDetail.js';
 
 class App extends Component {
 
@@ -132,7 +131,7 @@ class App extends Component {
                     this.state.hasErrored ?
                         <ErrorMessage onButtonClick={this.toggleErrorMessage} errorMessage={this.state.errorMessage} /> : null
                 }
-                <div class="exporter-buttons">
+                <div className="exporter-buttons">
                     <Exporter data={this.state.artistData} detailName="Artist" />
                     <Exporter data={this.state.albumData} detailName="Album" />
                 </div>

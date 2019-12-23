@@ -144,7 +144,7 @@ class AlbumInput extends Component {
         // * Get first item from list
         let upload = res.filesUploaded[0];
 
-        if (upload.status.toLowerCase() != "stored" || !upload.url) return;
+        if (upload.status.toLowerCase() !== "stored" || !upload.url) return;
 
         album.imageFilePath = upload.url;
 
