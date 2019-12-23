@@ -21,7 +21,7 @@ class Exporter extends Component {
     render() {
 
         return (
-            <div class="exporter">
+            <div className="exporter">
                 <button className="button is-info" onClick={this.toggleDisplay}>Show {this.props.detailName} Details</button>
                 {
                     this.state.showDetail ?
