@@ -13,7 +13,7 @@ const Album = (props) => {
                 }
 
                 <div className="card-image">
-                    <img alt={props.title} src="https://dummyimage.com/820/b5b5b5/fff.jpg" />
+                    <img alt={props.title} src={props.image} />
                 </div>
                 <div className="card-content">
                     <p className="is-size-6-touch is-size-5-desktop">{props.title}</p>

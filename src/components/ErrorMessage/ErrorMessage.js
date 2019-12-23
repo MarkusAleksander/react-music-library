@@ -6,7 +6,7 @@ const ErrorMessage = (props) => {
         <div className="error_message">
             <div className="error_message__overlay"></div>
             <div className="error_message__content">
-                <p className="error_message__copy">That album already exists!</p>
+                <p className="error_message__copy">{props.errorMessage}</p>
                 <div className="field">
                     <div className="control">
                         <button className="button is-primary" onClick={props.onButtonClick}>Continue</button>

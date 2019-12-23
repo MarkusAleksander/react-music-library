@@ -4,6 +4,7 @@ import Album from '../Albums/Album/Album';
 
 import InputSelection from './InputSelect/InputSelect.js';
 import InputCheckbox from './InputCheckbox/InputCheckbox.js';
+import FileUpload from './FileUpload/FileUpload.js';
 
 class AlbumInput extends Component {
 
@@ -16,7 +17,8 @@ class AlbumInput extends Component {
                 artist: '',
                 owned: false,
                 artistId: -1,
-                id: 0
+                id: 0,
+                imageFilePath: "https://dummyimage.com/820/b5b5b5/fff.jpg"
             }
         }
     }
@@ -113,14 +115,16 @@ class AlbumInput extends Component {
                 artistId: newAlbum.artistId,
                 artist: newAlbum.artist,
                 title: newAlbum.title,
-                owned: newAlbum.owned
+                owned: newAlbum.owned,
+                image: newAlbum.imageFilePath
             });
 
             let nextAlbum = {
                 title: '',
                 artist: '',
                 owned: false,
-                artistId: -1
+                artistId: -1,
+                imageFilePath: "https://dummyimage.com/820/b5b5b5/fff.jpg"
             }
 
             this.setState({
@@ -129,6 +133,24 @@ class AlbumInput extends Component {
         }
 
         return false;
+    }
+
+    fileChangeHandler = (res) => {
+
+        let album = { ...this.state.newAlbumData }
+
+        if (!Array.isArray(res.filesUploaded)) return;
+
+        // * Get first item from list
+        let upload = res.filesUploaded[0];
+
+        if (upload.status.toLowerCase() != "stored" || !upload.url) return;
+
+        album.imageFilePath = upload.url;
+
+        this.setState({
+            newAlbumData: album
+        });
     }
 
     render() {
@@ -143,6 +165,7 @@ class AlbumInput extends Component {
                             <InputSelection onUpdate={this.titleChangeHandler} data={this.props.albumData} dataTitle={"title"} newData={this.state.newAlbumData.title}></InputSelection>
                             <InputSelection onUpdate={this.artistChangeHandler} data={this.props.artistData} dataTitle={"artist"} newData={this.state.newAlbumData.artist}></InputSelection>
                             <InputCheckbox onChangeHandler={this.ownedChangeHandler} isChecked={this.state.newAlbumData.owned} />
+                            <FileUpload onChange={this.fileChangeHandler} />
 
                             <div className="field">
                                 <div className="control">
@@ -161,6 +184,7 @@ class AlbumInput extends Component {
                                         artist={this.state.newAlbumData.artist}
                                         title={this.state.newAlbumData.title}
                                         owned={this.state.newAlbumData.owned}
+                                        image={this.state.newAlbumData.imageFilePath}
                                         layoutClassOptions={""}></Album>
                                     :
                                     null

@@ -16,7 +16,8 @@ class App extends Component {
         this.state = {
             albumData: AlbumData,
             artistData: ArtistData,
-            hasErrored: false
+            hasErrored: false,
+            errorMessage: ""
         }
     }
 
@@ -24,9 +25,10 @@ class App extends Component {
         return text.trim().toLowerCase();
     }
 
-    toggleErrorMessage = () => {
+    toggleErrorMessage = (message = "") => {
         this.setState({
-            hasErrored: !this.state.hasErrored
+            hasErrored: !this.state.hasErrored,
+            errorMessage: message
         });
     }
 
@@ -42,7 +44,7 @@ class App extends Component {
 
         // * If found, don't continue
         if (duplicateAlbumId > -1) {
-            this.toggleErrorMessage();
+            this.toggleErrorMessage("That album already exists!");
             return;
         }
 
@@ -70,7 +72,8 @@ class App extends Component {
             id: newId,
             artistId: newAlbum.artistId,
             title: newAlbum.title,
-            owned: newAlbum.owned
+            owned: newAlbum.owned,
+            image: newAlbum.image
         });
 
         this.setState({
@@ -123,7 +126,7 @@ class App extends Component {
             <div className="App" >
                 {
                     this.state.hasErrored ?
-                        <ErrorMessage onButtonClick={this.toggleErrorMessage} /> : null
+                        <ErrorMessage onButtonClick={this.toggleErrorMessage} errorMessage={this.state.errorMessage} /> : null
                 }
                 <Albums albums={combinedAlbumArtistData} clicked={this.updateAlbumState} />
                 <AlbumInput onAddNewAlbum={this.addNewAlbum} artistData={this.state.artistData} albumData={this.state.albumData} />
