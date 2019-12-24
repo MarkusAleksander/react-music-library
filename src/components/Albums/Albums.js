@@ -18,7 +18,8 @@ const Albums = (props) => (
                                     image={album.image}
                                     changeOwnedDataClick={() => props.clicked(album.id, "changeOwnedData")}
                                     removeAlbumClick={() => props.clicked(album.id, "removeAlbum")}
-                                    layoutClassOptions={"column is-6-mobile is-4-tablet is-3-desktop"}></Album>
+                                    layoutClassOptions={"column is-6-mobile is-4-tablet is-3-desktop"}
+                                    editable={true}></Album>
                             ))
                         }
                     </div>
