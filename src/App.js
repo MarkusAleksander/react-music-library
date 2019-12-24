@@ -3,7 +3,6 @@ import Albums from './components/Albums/Albums';
 import Album from './components/Albums/Album/Album';
 import AlbumInput from './components/AlbumInput/AlbumInput';
 import ErrorMessage from './components/ErrorMessage/ErrorMessage';
-//import './App.css';
 import 'bulma/css/bulma.css';
 import './App.css';
 
@@ -91,7 +90,15 @@ class App extends Component {
 
         this.setState({
             albumData: newAlbums,
-            isEditingNewAlbum: false
+            isEditingNewAlbum: false,
+            newAlbum: {
+                title: '',
+                artist: '',
+                owned: false,
+                artistId: -1,
+                id: 0,
+                imageFilePath: "https://dummyimage.com/820/b5b5b5/fff.jpg"
+            }
         });
     }
 
@@ -155,6 +162,7 @@ class App extends Component {
                     <Exporter data={this.state.artistData} detailName="Artist" />
                     <Exporter data={this.state.albumData} detailName="Album" />
                 </div>
+
                 <Albums albums={combinedAlbumArtistData} clicked={this.updateAlbumState} />
 
                 <div className="section">
@@ -182,7 +190,7 @@ class App extends Component {
                             </div>
                             <div className="column is-12-mobile is-4-tablet is-4-desktop is-offset-1-tablet is-offset-1-desktop">
                                 {
-                                    this.state.isEditingNewAlbum ?
+                                    this.state.isEditingNewAlbum && (this.state.newAlbum.artist !== "" || this.state.newAlbum.title !== "") ?
                                         <Album
                                             key={this.state.newAlbum.id}
                                             artistId={this.state.newAlbum.artistId}

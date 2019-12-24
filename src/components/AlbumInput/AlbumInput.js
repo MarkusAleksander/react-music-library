@@ -63,7 +63,7 @@ class AlbumInput extends Component {
     }
 
     fileChangeHandler = (res) => {
-
+        debugger;
         let album = {
             ...this.state.newAlbumData
         }
@@ -95,20 +95,6 @@ class AlbumInput extends Component {
             newAlbum.artistId !== -1 ||
             newAlbum.artist !== ''
         ) {
-
-            let nextAlbum = {
-                title: '',
-                artist: '',
-                owned: false,
-                artistId: -1,
-                id: 0,
-                imageFilePath: "https://dummyimage.com/820/b5b5b5/fff.jpg"
-            }
-
-            this.setState({
-                newAlbumData: nextAlbum
-            });
-
             this.props.onConfirm(newAlbum);
         }
 
