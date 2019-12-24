@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Albums from './components/Albums/Albums';
+import Album from './components/Albums/Album/Album';
 import AlbumInput from './components/AlbumInput/AlbumInput';
 import ErrorMessage from './components/ErrorMessage/ErrorMessage';
 //import './App.css';
@@ -20,7 +21,16 @@ class App extends Component {
             albumData: AlbumData,
             artistData: ArtistData,
             hasErrored: false,
-            errorMessage: ""
+            errorMessage: "",
+            isEditingNewAlbum: false,
+            newAlbum: {
+                title: '',
+                artist: '',
+                owned: false,
+                artistId: -1,
+                id: 0,
+                imageFilePath: "https://dummyimage.com/820/b5b5b5/fff.jpg"
+            }
         }
     }
 
@@ -81,6 +91,7 @@ class App extends Component {
 
         this.setState({
             albumData: newAlbums,
+            isEditingNewAlbum: false
         });
     }
 
@@ -110,6 +121,15 @@ class App extends Component {
         }
     }
 
+    editNewAlbum = (edit) => {
+        let editedAlbum = Object.assign(this.state.newAlbum, edit);
+
+        this.setState({
+            newAlbum: editedAlbum,
+            isEditingNewAlbum: true
+        })
+    }
+
     render() {
 
         let d = this.state.artistData;
@@ -136,7 +156,47 @@ class App extends Component {
                     <Exporter data={this.state.albumData} detailName="Album" />
                 </div>
                 <Albums albums={combinedAlbumArtistData} clicked={this.updateAlbumState} />
-                <AlbumInput onAddNewAlbum={this.addNewAlbum} artistData={this.state.artistData} albumData={this.state.albumData} />
+
+                <div className="section">
+                    <div className="container">
+                        <div className="columns">
+                            <div className="column is-12-mobile is-6-tablet is-6-desktop">
+                                <AlbumInput
+                                    formTitleText={"Add a new album:"}
+                                    onEdit={this.editNewAlbum}
+                                    onConfirm={this.addNewAlbum}
+                                    confirmText={"Add Album"}
+                                    data={{
+                                        "title": this.state.albumData,
+                                        "artist": this.state.artistData
+                                    }}
+                                    albumData={{
+                                        title: '',
+                                        artist: '',
+                                        owned: false,
+                                        artistId: -1,
+                                        id: 0,
+                                        imageFilePath: "https://dummyimage.com/820/b5b5b5/fff.jpg"
+                                    }}
+                                />
+                            </div>
+                            <div className="column is-12-mobile is-4-tablet is-4-desktop is-offset-1-tablet is-offset-1-desktop">
+                                {
+                                    this.state.isEditingNewAlbum ?
+                                        <Album
+                                            key={this.state.newAlbum.id}
+                                            artistId={this.state.newAlbum.artistId}
+                                            artist={this.state.newAlbum.artist}
+                                            title={this.state.newAlbum.title}
+                                            owned={this.state.newAlbum.owned}
+                                            image={this.state.newAlbum.imageFilePath}
+                                            layoutClassOptions={""}></Album>
+                                        : null
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }

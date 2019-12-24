@@ -13,29 +13,29 @@ class AlbumInput extends Component {
 
         this.state = {
             newAlbumData: {
-                title: '',
-                artist: '',
-                owned: false,
-                artistId: -1,
-                id: 0,
-                imageFilePath: "https://dummyimage.com/820/b5b5b5/fff.jpg"
+                title: props.albumData.title || '',
+                artist: props.albumData.artist || '',
+                owned: props.albumData.owned || false,
+                artistId: props.albumData.artistId || -1,
+                id: props.albumData.id || 0,
+                imageFilePath: props.albumData.imageFilePath || "https://dummyimage.com/820/b5b5b5/fff.jpg"
             }
         }
     }
 
-    titleChangeHandler = (event) => {
-
+    dataFormChangeHandler = (event, dataType) => {
         let album = {
             ...this.state.newAlbumData
         };
-        album.title = event.target.nodeName === "INPUT" ? event.target.value : event.target.getAttribute('data-value');
 
-        if (typeof album.artist === "string") {
+        album[dataType] = event.target.nodeName === "INPUT" ? event.target.value : event.target.getAttribute('data-value');
+
+        if (typeof album[dataType] === "string") {
             // * Check if artist already exists
-            let albumDataIndex = this.props.albumData.findIndex(data => album.title.toLowerCase().trim() === data.title.toLowerCase().trim());
+            let dIdx = this.props.data[dataType].findIndex(d => album[dataType].toLowerCase().trim() === d[dataType].toLowerCase().trim());
 
-            if (albumDataIndex > -1) {
-                album.artistId = this.props.albumData[albumDataIndex].id;
+            if (dIdx > -1) {
+                album.artistId = this.props.data.artist[dIdx].id;
             } else {
                 album.artistId = -1;
             }
@@ -43,48 +43,9 @@ class AlbumInput extends Component {
             this.setState({
                 newAlbumData: album
             });
+
+            this.props.onEdit(album);
         }
-    }
-
-    artistChangeHandler = (event) => {
-        let album = {
-            ...this.state.newAlbumData
-        };
-        album.artist = event.target.nodeName === "INPUT" ? event.target.value : event.target.getAttribute('data-value');
-
-        if (typeof album.artist === "string") {
-            // * Check if artist already exists
-            let artistDataIndex = this.props.artistData.findIndex(data => album.artist.toLowerCase().trim() === data.artist.toLowerCase().trim());
-
-            if (artistDataIndex > -1) {
-                album.artistId = this.props.artistData[artistDataIndex].id;
-            } else {
-                album.artistId = -1;
-            }
-
-            this.setState({
-                newAlbumData: album
-            });
-        }
-    }
-
-    artistIdChangeHandler = (event) => {
-        let album = {
-            ...this.state.newAlbumData
-        };
-
-        album.artistId = Number(event.target.value);
-
-        if (album.artistId !== -1) {
-            let artistData = this.props.artistData.find((artist) => {
-                return artist.id === album.artistId;
-            });
-            album.artist = artistData.artist;
-        }
-
-        this.setState({
-            newAlbumData: album
-        });
     }
 
     ownedChangeHandler = (event) => {
@@ -97,47 +58,15 @@ class AlbumInput extends Component {
         this.setState({
             newAlbumData: album
         });
-    }
 
-    addAlbum = (event) => {
-        event.preventDefault();
-        let newAlbum = {
-            ...this.state.newAlbumData
-        };
-
-        if (
-            newAlbum.title !== '' ||
-            newAlbum.artistId !== -1 ||
-            newAlbum.artist !== ''
-        ) {
-
-            this.props.onAddNewAlbum({
-                artistId: newAlbum.artistId,
-                artist: newAlbum.artist,
-                title: newAlbum.title,
-                owned: newAlbum.owned,
-                image: newAlbum.imageFilePath
-            });
-
-            let nextAlbum = {
-                title: '',
-                artist: '',
-                owned: false,
-                artistId: -1,
-                imageFilePath: "https://dummyimage.com/820/b5b5b5/fff.jpg"
-            }
-
-            this.setState({
-                newAlbumData: nextAlbum
-            });
-        }
-
-        return false;
+        this.props.onEdit(album);
     }
 
     fileChangeHandler = (res) => {
 
-        let album = { ...this.state.newAlbumData }
+        let album = {
+            ...this.state.newAlbumData
+        }
 
         if (!Array.isArray(res.filesUploaded)) return;
 
@@ -151,48 +80,64 @@ class AlbumInput extends Component {
         this.setState({
             newAlbumData: album
         });
+
+        this.props.onEdit(album);
+    }
+
+    onSubmit = (event) => {
+        event.preventDefault();
+        let newAlbum = {
+            ...this.state.newAlbumData
+        };
+
+        if (
+            newAlbum.title !== '' ||
+            newAlbum.artistId !== -1 ||
+            newAlbum.artist !== ''
+        ) {
+
+            let nextAlbum = {
+                title: '',
+                artist: '',
+                owned: false,
+                artistId: -1,
+                id: 0,
+                imageFilePath: "https://dummyimage.com/820/b5b5b5/fff.jpg"
+            }
+
+            this.setState({
+                newAlbumData: nextAlbum
+            });
+
+            this.props.onConfirm(newAlbum);
+        }
+
+        return false;
     }
 
     render() {
+
+        let dataForms = Object.entries(this.props.data).map((v, k) => {
+            return <InputSelection key={k} onUpdate={(event) => this.dataFormChangeHandler(event, v[0])} data={v[1]} dataTitle={v[0]} newData={this.state.newAlbumData[v[0]]}></InputSelection>
+        });
+
         return (
-            <div className="section">
-                <div className="container">
-                    <div className="columns">
-                        <form className="column is-12-mobile is-6-tablet is-6-desktop" onSubmit={this.addAlbum}>
+            <form onSubmit={this.onSubmit}>
 
-                            <h2 className="is-size-4">Add a new album:</h2>
+                <h2 className="is-size-4">{this.props.formTitleText}</h2>
+                {
+                    dataForms
+                }
+                <InputCheckbox onChangeHandler={this.ownedChangeHandler} isChecked={this.state.newAlbumData.owned} />
+                <FileUpload onChange={this.fileChangeHandler} />
 
-                            <InputSelection onUpdate={this.titleChangeHandler} data={this.props.albumData} dataTitle={"title"} newData={this.state.newAlbumData.title}></InputSelection>
-                            <InputSelection onUpdate={this.artistChangeHandler} data={this.props.artistData} dataTitle={"artist"} newData={this.state.newAlbumData.artist}></InputSelection>
-                            <InputCheckbox onChangeHandler={this.ownedChangeHandler} isChecked={this.state.newAlbumData.owned} />
-                            <FileUpload onChange={this.fileChangeHandler} />
-
-                            <div className="field">
-                                <div className="control">
-                                    <button className="button is-primary">Add Album</button>
-                                </div>
-                            </div>
-
-                        </form>
-
-                        <div className="column is-12-mobile is-4-tablet is-4-desktop is-offset-1-tablet is-offset-1-desktop">
-                            {
-                                this.state.newAlbumData.artist !== '' || this.state.newAlbumData.title !== '' ?
-                                    <Album
-                                        key={this.state.newAlbumData.id}
-                                        artistId={this.state.newAlbumData.artistId}
-                                        artist={this.state.newAlbumData.artist}
-                                        title={this.state.newAlbumData.title}
-                                        owned={this.state.newAlbumData.owned}
-                                        image={this.state.newAlbumData.imageFilePath}
-                                        layoutClassOptions={""}></Album>
-                                    :
-                                    null
-                            }
-                        </div>
+                <div className="field">
+                    <div className="control">
+                        <button className="button is-primary">{this.props.confirmText}</button>
                     </div>
                 </div>
-            </div>
+
+            </form>
         )
     }
 
