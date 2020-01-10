@@ -1,8 +1,5 @@
-const cloudinaryData = {
-    cloudName: "",
-    cloudKey: "",
-    cloudSecret: "",
-    env: ""
-}
+const uploadAPIData = {
+    key: "",
+};
 
-export default cloudinaryData;
+export default uploadAPIData;
