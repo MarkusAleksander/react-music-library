@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import Search from "../UI/Search/Search";
+import Search from "./Search/Search";
 import Select from "./../UI/Select/Select";
 import Button from "./../UI/Button/Button";
 
@@ -62,7 +62,7 @@ class SearchForm extends Component {
 
     render() {
         return (
-            <div className="search-form">
+            <div className="form search-form">
                 <Search
                     onchange={this.handleTextChange}
                     value={this.state.search_text}
@@ -72,7 +72,13 @@ class SearchForm extends Component {
                     options={this.state.options}
                     selected={this.state.search_type}
                 />
-                <Button onclick={this.handleClick} text={"Search"} />
+                <div className="control">
+                    <Button
+                        type="is-primary"
+                        onclick={this.handleClick}
+                        text={"Search"}
+                    />
+                </div>
             </div>
         );
     }

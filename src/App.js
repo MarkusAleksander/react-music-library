@@ -1,5 +1,7 @@
 import React, { Component } from "react";
+
 import Search from "./containers/Search/Search";
+import Modal from "./components/UI/Modal/Modal";
 
 import axios from "./netlify_api.js";
 
@@ -10,7 +12,9 @@ class App extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {};
+        this.state = {
+            has_spotify_request_token: false,
+        };
     }
 
     componentDidMount() {
@@ -21,6 +25,9 @@ class App extends Component {
                     config.params["spotify_grant_token"] = res.data;
                     return config;
                 });
+                this.setState({
+                    has_spotify_request_token: true,
+                });
             })
             .catch((err) => {
                 console.log(err);
@@ -28,8 +35,17 @@ class App extends Component {
     }
 
     render() {
+        const modal = !this.state.has_spotify_request_token ? (
+            <Modal>
+                <div>
+                    <p>Requesting access token from Spotify...</p>
+                </div>
+            </Modal>
+        ) : null;
+
         return (
             <div className="App">
+                {modal}
                 <Search />
             </div>
         );

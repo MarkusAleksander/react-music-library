@@ -10,9 +10,18 @@ const Select = (props) => {
     });
 
     return (
-        <select value={props.selected} onChange={props.onchange}>
-            {options}
-        </select>
+        <div className="field">
+            <label className="label">{props.label}</label>
+            <div className="control">
+                <select
+                    className="select"
+                    value={props.selected}
+                    onChange={props.onchange}
+                >
+                    {options}
+                </select>
+            </div>
+        </div>
     );
 };
 
