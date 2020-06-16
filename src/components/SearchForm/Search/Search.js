@@ -7,6 +7,7 @@ const Search = (props) => (
         type="text"
         onchange={props.onchange}
         value={props.value}
+        label={props.label}
     />
 );
 

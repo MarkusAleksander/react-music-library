@@ -79,10 +79,9 @@ class Albums extends Component {
         return (
             <div className="section">
                 <div className="container">
-                    <SearchForm onsearchresult={this.handleSearcponsesult} />
+                    <SearchForm onsearchresult={this.handleSearchRsesult} />
                 </div>
-                <div className=""></div>
-                {search_results}
+                <div className="container">{search_results}</div>
             </div>
         );
     }

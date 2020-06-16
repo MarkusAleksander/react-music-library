@@ -66,11 +66,13 @@ class SearchForm extends Component {
                 <Search
                     onchange={this.handleTextChange}
                     value={this.state.search_text}
+                    label={"Search Term:"}
                 />
                 <Select
                     onchange={this.handleSelectChange}
                     options={this.state.options}
                     selected={this.state.search_type}
+                    label={"Search Type"}
                 />
                 <div className="control">
                     <Button

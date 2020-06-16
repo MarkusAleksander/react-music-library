@@ -3,9 +3,12 @@ import React from "react";
 import Album from "./../Album/Album";
 
 const AlbumList = (props) => (
-    <ul>
+    <ul className="columns is-mobile">
         {props.albums.map((album) => (
-            <li key={album.album_id}>
+            <li
+                key={album.album_id}
+                className="column is-one-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"
+            >
                 <Album
                     album_title={album.album_title}
                     album_artist={album.album_artist}
