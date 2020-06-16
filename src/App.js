@@ -22,6 +22,9 @@ class App extends Component {
             .get("/request-token")
             .then((res) => {
                 axios.interceptors.request.use((config) => {
+                    if (!config.params) {
+                        config.params = {};
+                    }
                     config.params["spotify_grant_token"] = res.data;
                     return config;
                 });

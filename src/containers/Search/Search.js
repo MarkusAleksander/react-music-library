@@ -7,6 +7,8 @@ import SearchForm from "../../components/SearchForm/SearchForm";
 import AlbumList from "./../../components/AlbumList/AlbumList";
 import ArtistList from "./../../components/ArtistList/ArtistList";
 
+import axios from "./../../netlify_api.js";
+
 class Albums extends Component {
     state = {
         search_result: null,
@@ -20,7 +22,16 @@ class Albums extends Component {
     };
 
     onSaveAlbum = (id) => {
-        console.log(id);
+        axios
+            .post("/save-album", {
+                album_id: id,
+            })
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     };
 
     onSaveArtist = (id) => {
