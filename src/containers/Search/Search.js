@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import Auxillary from "./../../hoc/Auxillary";
+
 import SearchForm from "../../components/SearchForm/SearchForm";
 
 import AlbumList from "./../../components/AlbumList/AlbumList";
@@ -17,7 +19,15 @@ class Albums extends Component {
         });
     };
 
-    process_album_data() {
+    onSaveAlbum = (id) => {
+        console.log(id);
+    };
+
+    onSaveArtist = (id) => {
+        console.log(id);
+    };
+
+    process_album_data = () => {
         const album_results = this.state.search_result.albums.items;
 
         const mapped_album_results = album_results
@@ -41,10 +51,15 @@ class Albums extends Component {
                 };
             });
 
-        return <AlbumList albums={mapped_album_results} />;
-    }
+        return (
+            <AlbumList
+                albums={mapped_album_results}
+                onsaveselect={this.onSaveAlbum}
+            />
+        );
+    };
 
-    process_artist_data() {
+    process_artist_data = () => {
         const artist_results = this.state.search_result.artists.items;
 
         const mapped_artist_results = artist_results
@@ -60,8 +75,13 @@ class Albums extends Component {
                 };
             });
 
-        return <ArtistList artists={mapped_artist_results} />;
-    }
+        return (
+            <ArtistList
+                artists={mapped_artist_results}
+                onsaveselect={this.onSaveArtist}
+            />
+        );
+    };
 
     process_search_result_data = () => {
         if (this.state.search_result.result_type === "album") {
@@ -77,12 +97,12 @@ class Albums extends Component {
             : null;
 
         return (
-            <div className="section">
-                <div className="container">
-                    <SearchForm onsearchresult={this.handleSearchRsesult} />
+            <Auxillary>
+                <div className="section">
+                    <SearchForm onsearchresponse={this.handleSearchResponse} />
                 </div>
-                <div className="container">{search_results}</div>
-            </div>
+                <div className="section">{search_results}</div>
+            </Auxillary>
         );
     }
 }

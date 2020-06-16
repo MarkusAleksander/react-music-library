@@ -48,7 +48,7 @@ class SearchForm extends Component {
             })
             .then((res) => {
                 res.data.result_type = result_type;
-                this.props.onsearchresult(res.data);
+                this.props.onsearchresponse(res.data);
             })
             .catch((err) => console.log(err));
     };
