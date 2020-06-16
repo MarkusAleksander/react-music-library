@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 
-// import AlbumList from "./../../components/AlbumList/AlbumList";
 import SearchForm from "../../components/SearchForm/SearchForm";
+
+import AlbumList from "./../../components/AlbumList/AlbumList";
+import ArtistList from "./../../components/ArtistList/ArtistList";
 
 class Albums extends Component {
     state = {
@@ -14,7 +16,32 @@ class Albums extends Component {
         });
     };
 
-    process_album_data() {}
+    process_album_data() {
+        let album_data = this.state.search_result.albums;
+
+        let album_results = album_data.items;
+
+        let mapped_album_results = album_results.map((album) => {
+            return {
+                album_title: album.name,
+                album_id: album.id,
+                album_image:
+                    album.images[0] && album.images[0].url
+                        ? album.images[0].url
+                        : null,
+                album_artist:
+                    album.artists[0] && album.artists[0].name
+                        ? album.artists[0].name
+                        : null,
+                album_artist_id:
+                    album.artists[0] && album.artists[0].id
+                        ? album.artists[0].id
+                        : null,
+            };
+        });
+
+        return <AlbumList albums={mapped_album_results} />;
+    }
 
     process_artist_data() {
         let artist_data = this.state.search_result.artists;
@@ -22,18 +49,17 @@ class Albums extends Component {
         let artist_results = artist_data.items;
 
         let mapped_artist_results = artist_results.map((artist) => {
-            return (
-                <div className="artist-result" key={artist.id}>
-                    <p>{artist.name}</p>
-                    <p>{artist.id}</p>
-                    {artist.images[0] && artist.images[0].url ? (
-                        <img alt="" src={artist.images[0].url} />
-                    ) : null}
-                </div>
-            );
+            return {
+                artist_title: artist.name,
+                artist_id: artist.id,
+                artist_image:
+                    artist.images[0] && artist.images[0].url
+                        ? artist.images[0].url
+                        : null,
+            };
         });
 
-        return mapped_artist_results;
+        return <ArtistList artists={mapped_artist_results} />;
     }
 
     process_data = () => {
