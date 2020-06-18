@@ -6,7 +6,7 @@ const Album = (props) => (
     <Card
         className="album"
         title={props.album_title}
-        onHeaderIconClick={props.headerIconClick}
+        header_actions={props.header_actions}
         image={
             props.album_image ? <img alt="" src={props.album_image} /> : null
         }
