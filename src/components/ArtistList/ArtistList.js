@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 
+import { connect } from "react-redux";
+import * as actionTypes from "./../../store/actions";
+
 import Artist from "./../Artist/Artist";
 
 import axios from "./../../netlify_api.js";
@@ -19,9 +22,14 @@ class ArtistList extends Component {
         this.processArtistData(this.props.artist_data);
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps) {
         console.log("[ArtistList:componentDidUpdate]");
-        // this.processArtistData(this.props.artist_data);
+        if (prevProps.artist_data !== this.props.artist_data) {
+            console.log("[ArtistList:componentDidUpdate:props don't match]");
+            this.processArtistData(this.props.artist_data);
+        } else {
+            console.log("[ArtistList:componentDidUpdate:props match]");
+        }
     }
 
     processArtistData = (unprocessed_artist_data) => {
@@ -49,7 +57,14 @@ class ArtistList extends Component {
                 artist_id: id,
             })
             .then((res) => {
-                console.log(res);
+                if (res.status === 200 && res.data.success_id) {
+                    debugger;
+                    let obj = {};
+                    obj[res.data.success_id] = {
+                        artist_id: id,
+                    };
+                    this.props.onStoreArtist(obj);
+                }
             })
             .catch((err) => {
                 console.log(err);
@@ -82,4 +97,25 @@ class ArtistList extends Component {
     }
 }
 
-export default ArtistList;
+const mapStateToProps = (state) => {
+    return {
+        artists: state.artists.artists,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        onStoreArtist: (artist_data) =>
+            dispatch({
+                type: actionTypes.STORE_ARTIST,
+                artist_data,
+            }),
+        onRemoveArtist: (artist_id) =>
+            dispatch({
+                type: actionTypes.REMOVE_ARTIST,
+                artist_id,
+            }),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(ArtistList);

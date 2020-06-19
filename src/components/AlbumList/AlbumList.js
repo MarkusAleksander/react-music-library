@@ -20,16 +20,6 @@ class AlbumList extends Component {
     componentDidMount() {
         console.log("[AlbumList:componentDidMount]");
         this.processAlbumData(this.props.album_data);
-        // * send request for saved albums
-        axios
-            .get("/get-saved-albums")
-            .then((res) => {
-                console.log(res);
-                // this.props.onStoreAlbumList(res.data)
-            })
-            .catch((err) => {
-                console.log(err);
-            });
     }
 
     componentDidUpdate(prevProps) {
@@ -76,7 +66,14 @@ class AlbumList extends Component {
                 status: status,
             })
             .then((res) => {
-                console.log(res);
+                if (res.status === 200 && res.data.success_id) {
+                    let obj = {};
+                    obj[res.data.success_id] = {
+                        album_id: id,
+                        status: status,
+                    };
+                    this.props.onStoreAlbum(obj);
+                }
             })
             .catch((err) => {
                 console.log(err);
@@ -130,23 +127,16 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onStoreAlbumList: (albumList) =>
+        onStoreAlbum: (album_data) =>
             dispatch({
-                type: actionTypes.STORE_LIST,
-                albums: albumList,
-            }),
-        onStoreAlbum: (album_id, status) =>
-            dispatch({
-                type: actionTypes.STORE_ITEM,
-                album_id,
-                status,
+                type: actionTypes.STORE_ALBUM,
+                album_data,
             }),
         onRemoveAlbum: (album_id) =>
             dispatch({
-                type: actionTypes.REMOVE_ITEM,
+                type: actionTypes.REMOVE_ALBUM,
                 album_id,
             }),
-        // onUpdateAlbum: () => dispatch({}),
     };
 };
 

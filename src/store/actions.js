@@ -1,3 +1,6 @@
-export const STORE_LIST = "store_list";
-export const STORE_ITEM = "store_item";
-export const REMOVE_ITEM = "remove_item";
+export const STORE_ALBUMS = "store_albums";
+export const STORE_ARTISTS = "store_artists";
+export const STORE_ALBUM = "store_album";
+export const REMOVE_ALBUM = "remove_album";
+export const STORE_ARTIST = "store_artist";
+export const REMOVE_ARTIST = "remove_artist";

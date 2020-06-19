@@ -6,19 +6,17 @@ const initialState = {
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
-        case actionTypes.STORE_LIST:
+        case actionTypes.STORE_ARTISTS:
             return {
                 ...state,
-                artists: action.artists,
+                artists: action.artist_data,
             };
-        case actionTypes.STORE_ITEM:
+        case actionTypes.STORE_ARTIST:
             return {
                 ...state,
-                artists: state.artists.concat({
-                    artist_id: action.artist_id,
-                }),
+                artists: state.artists.concat(action.artist_data),
             };
-        case actionTypes.REMOVE_ITEM:
+        case actionTypes.REMOVE_ARTIST:
             const updateArray = state.artists.filter((artist) => {
                 return artist.artist_id !== action.artist_id;
             });

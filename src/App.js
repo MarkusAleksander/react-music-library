@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 
+import { connect } from "react-redux";
+import * as actionTypes from "./store/actions";
+
 import Search from "./containers/Search/Search";
 import Modal from "./components/UI/Modal/Modal";
 
@@ -35,6 +38,52 @@ class App extends Component {
             .catch((err) => {
                 console.log(err);
             });
+
+        // * send request for saved albums
+        axios
+            .get("/get-saved-albums")
+            .then((res) => {
+                console.log(res.data);
+                if (res.data) {
+                    let keys = Object.keys(res.data);
+                    let new_array = [];
+                    for (let i = 0; i < keys.length; i++) {
+                        let obj = {};
+                        let key = keys[i];
+                        obj[key] = {
+                            album_id: res.data[keys[i]].album_id,
+                            status: res.data[keys[i]].status,
+                        };
+                        new_array.push(obj);
+                    }
+                    this.props.onStoreAlbums(new_array);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+        axios
+            .get("/get-saved-artists")
+            .then((res) => {
+                console.log(res.data);
+                if (res.data) {
+                    // returns object - convert to array
+                    let keys = Object.keys(res.data);
+                    let new_array = [];
+                    for (let i = 0; i < keys.length; i++) {
+                        let obj = {};
+                        let key = keys[i];
+                        obj[key] = {
+                            artist_id: res.data[keys[i]].artist_id,
+                        };
+                        new_array.push(obj);
+                    }
+                    this.props.onStoreArtists(new_array);
+                }
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
     render() {
@@ -55,4 +104,22 @@ class App extends Component {
     }
 }
 
-export default App;
+const mapDispatchToProps = (dispatch) => {
+    return {
+        onStoreAlbums: (album_data) => {
+            console.log("[onStoreAlbums]");
+            dispatch({
+                type: actionTypes.STORE_ALBUMS,
+                album_data,
+            });
+        },
+        onStoreArtists: (artist_data) => {
+            dispatch({
+                type: actionTypes.STORE_ARTISTS,
+                artist_data,
+            });
+        },
+    };
+};
+
+export default connect(null, mapDispatchToProps)(App);
