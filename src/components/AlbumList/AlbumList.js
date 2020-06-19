@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 
+import { connect } from "react-redux";
+import * as actionTypes from "./../../store/actions";
+
 import Album from "./../Album/Album";
 
 import axios from "./../../netlify_api.js";
@@ -17,6 +20,16 @@ class AlbumList extends Component {
     componentDidMount() {
         console.log("[AlbumList:componentDidMount]");
         this.processAlbumData(this.props.album_data);
+        // * send request for saved albums
+        axios
+            .get("/get-saved-albums")
+            .then((res) => {
+                console.log(res);
+                // this.props.onStoreAlbumList(res.data)
+            })
+            .catch((err) => {
+                console.log(err);
+            });
     }
 
     componentDidUpdate(prevProps) {
@@ -108,4 +121,33 @@ class AlbumList extends Component {
         );
     }
 }
-export default AlbumList;
+
+const mapStateToProps = (state) => {
+    return {
+        albums: state.albums.albums,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        onStoreAlbumList: (albumList) =>
+            dispatch({
+                type: actionTypes.STORE_LIST,
+                albums: albumList,
+            }),
+        onStoreAlbum: (album_id, status) =>
+            dispatch({
+                type: actionTypes.STORE_ITEM,
+                album_id,
+                status,
+            }),
+        onRemoveAlbum: (album_id) =>
+            dispatch({
+                type: actionTypes.REMOVE_ITEM,
+                album_id,
+            }),
+        // onUpdateAlbum: () => dispatch({}),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AlbumList);
