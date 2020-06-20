@@ -86,7 +86,9 @@ class ArtistList extends Component {
                                 {
                                     onClick: () =>
                                         this.onSaveSelect(artist.artist_id),
-                                    content: "Fave",
+                                    content: <span className="icon">Save</span>,
+                                    status: "",
+                                    type: "is-primary",
                                 },
                             ]}
                         />
@@ -99,7 +101,7 @@ class ArtistList extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        artists: state.artists.artists,
+        saved_artists: state.artists.artists,
     };
 };
 

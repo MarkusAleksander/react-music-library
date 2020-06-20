@@ -1,18 +1,23 @@
 import React from "react";
+import Auxillary from "./../../../hoc/Auxillary";
+import Button from "./../Button/Button";
 
 const Card = (props) => {
     const header_actions =
         props.header_actions && props.header_actions.length
             ? props.header_actions.map((action, idx) => {
                   return (
-                      <div
+                      <Button
                           key={idx}
-                          className="card-header-icon"
+                          className={[
+                              "card-header-icon",
+                              action.className,
+                          ].join(" ")}
                           aria-label={action.content}
                           onClick={action.onClick}
-                      >
-                          <span className="icon">{action.content}</span>
-                      </div>
+                          content={action.content}
+                          status={action.status}
+                      />
                   );
               })
             : null;
@@ -22,7 +27,9 @@ const Card = (props) => {
             {props.title ? (
                 <div className="card-header">
                     <p className="card-header-title">{props.title}</p>
-                    {header_actions ? <div>{header_actions}</div> : null}
+                    {header_actions ? (
+                        <Auxillary>{header_actions}</Auxillary>
+                    ) : null}
                 </div>
             ) : null}
             {props.image ? (

@@ -76,9 +76,9 @@ class SearchForm extends Component {
                 />
                 <div className="control">
                     <Button
-                        type="is-primary"
-                        onclick={this.handleClick}
-                        text={"Search"}
+                        className="is-primary"
+                        onClick={this.handleClick}
+                        content={"Search"}
                     />
                 </div>
             </div>

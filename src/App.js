@@ -48,13 +48,11 @@ class App extends Component {
                     let keys = Object.keys(res.data);
                     let new_array = [];
                     for (let i = 0; i < keys.length; i++) {
-                        let obj = {};
-                        let key = keys[i];
-                        obj[key] = {
+                        new_array.push({
                             album_id: res.data[keys[i]].album_id,
                             status: res.data[keys[i]].status,
-                        };
-                        new_array.push(obj);
+                            gfb_id: keys[i],
+                        });
                     }
                     this.props.onStoreAlbums(new_array);
                 }
@@ -71,12 +69,10 @@ class App extends Component {
                     let keys = Object.keys(res.data);
                     let new_array = [];
                     for (let i = 0; i < keys.length; i++) {
-                        let obj = {};
-                        let key = keys[i];
-                        obj[key] = {
+                        new_array.push({
                             artist_id: res.data[keys[i]].artist_id,
-                        };
-                        new_array.push(obj);
+                            gfb_id: keys[i],
+                        });
                     }
                     this.props.onStoreArtists(new_array);
                 }
