@@ -12,69 +12,67 @@ class ArtistList extends Component {
         super(props);
 
         this.state = {
-            processed_artists: [],
             max_display_results: 6,
         };
     }
 
     componentDidMount() {
         console.log("[ArtistList:componentDidMount]");
-        this.processArtistData(this.props.artist_data);
     }
 
     componentDidUpdate(prevProps) {
         console.log("[ArtistList:componentDidUpdate]");
         if (prevProps.artist_data !== this.props.artist_data) {
             console.log("[ArtistList:componentDidUpdate:props don't match]");
-            this.processArtistData(this.props.artist_data);
         } else {
             console.log("[ArtistList:componentDidUpdate:props match]");
         }
     }
 
-    processArtistData = (unprocessed_artist_data) => {
-        const processed_artist_data = unprocessed_artist_data.artists.items
-            .slice(0, this.state.max_display_results)
-            .map((artist) => {
-                return {
-                    artist_title: artist.name,
-                    artist_id: artist.id,
-                    artist_image:
-                        artist.images[0] && artist.images[0].url
-                            ? artist.images[0].url
-                            : null,
-                };
-            });
-
-        this.setState({
-            processed_artists: processed_artist_data,
+    onSaveHandler = (id) => {
+        let is_saved = this.props.saved_artists.find((artist) => {
+            return artist.artist_id === id;
         });
-    };
 
-    onSaveSelect = (id) => {
-        axios
-            .post("/save-artist", {
-                artist_id: id,
-            })
-            .then((res) => {
-                if (res.status === 200 && res.data.success_id) {
-                    debugger;
-                    let obj = {};
-                    obj[res.data.success_id] = {
-                        artist_id: id,
-                    };
-                    this.props.onStoreArtist(obj);
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        if (is_saved) {
+            let artist = is_saved;
+
+            axios
+                .post("/unsave-artist", {
+                    artist_id: artist.artist_id,
+                    gfb_id: artist.gfb_id,
+                })
+                .then((res) => {
+                    if (res.status === 200 && res.data.success_id) {
+                        this.props.onRemoveArtist(res.data.success_id);
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        } else {
+            axios
+                .post("/save-artist", {
+                    artist_id: id,
+                })
+                .then((res) => {
+                    if (res.status === 200 && res.data.success_id) {
+                        this.props.onStoreArtist({
+                            gfb_id: res.data.success_id,
+                            artist_id: id,
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
     };
 
     render() {
         return (
             <ul className="columns is-mobile is-multiline">
-                {this.state.processed_artists.map((artist) => (
+                {this.props.artist_data.map((artist) => (
                     <li
                         key={artist.artist_id}
                         className="column is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"
@@ -85,10 +83,14 @@ class ArtistList extends Component {
                             header_actions={[
                                 {
                                     onClick: () =>
-                                        this.onSaveSelect(artist.artist_id),
-                                    content: <span className="icon">Save</span>,
+                                        this.onSaveHandler(artist.artist_id),
+                                    content: artist.is_saved
+                                        ? "Remove"
+                                        : "Save",
                                     status: "",
-                                    type: "is-primary",
+                                    className: artist.is_saved
+                                        ? "is-primary"
+                                        : "is-info",
                                 },
                             ]}
                         />
@@ -112,10 +114,10 @@ const mapDispatchToProps = (dispatch) => {
                 type: actionTypes.STORE_ARTIST,
                 artist_data,
             }),
-        onRemoveArtist: (artist_id) =>
+        onRemoveArtist: (gfb_id) =>
             dispatch({
                 type: actionTypes.REMOVE_ARTIST,
-                artist_id,
+                gfb_id,
             }),
     };
 };

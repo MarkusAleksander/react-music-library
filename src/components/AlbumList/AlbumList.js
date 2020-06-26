@@ -12,9 +12,7 @@ class AlbumList extends Component {
         super(props);
 
         this.state = {
-            processed_albums: [],
             max_display_results: 6,
-            is_loading: null,
         };
     }
 
@@ -49,9 +47,6 @@ class AlbumList extends Component {
             endpoint = "/save-album";
             onResponse = (res) => {
                 if (res.status === 200 && res.data.success_id) {
-                    this.setState({
-                        is_loading: null,
-                    });
                     this.props.onStoreAlbum({
                         gfb_id: res.data.success_id,
                         album_id: id,
@@ -60,10 +55,6 @@ class AlbumList extends Component {
                 }
             };
         }
-
-        this.setState({
-            is_loading: { id: id, status, status },
-        });
 
         axios
             .post(endpoint, {
@@ -85,13 +76,8 @@ class AlbumList extends Component {
                             ? null
                             : () =>
                                   this.onSelectHandler(album.album_id, "want"),
-                    content: <span className="icon">Want</span>,
-                    status:
-                        this.state.is_loading &&
-                        this.state.is_loading.id === album.album_id &&
-                        this.state.is_loading.status === "want"
-                            ? "is-loading"
-                            : "",
+                    content: "Want",
+                    status: "",
                     className:
                         album.saved_state === "want" ? "is-primary" : "is-info",
                 },
@@ -101,13 +87,8 @@ class AlbumList extends Component {
                             ? null
                             : () =>
                                   this.onSelectHandler(album.album_id, "have"),
-                    content: <span className="icon">Have</span>,
-                    status:
-                        this.state.is_loading &&
-                        this.state.is_loading.id === album.album_id &&
-                        this.state.is_loading.status === "have"
-                            ? "is-loading"
-                            : "",
+                    content: "Have",
+                    status: "",
                     className:
                         album.saved_state === "have" ? "is-primary" : "is-info",
                 },
@@ -131,12 +112,6 @@ class AlbumList extends Component {
         return <ul className="columns is-mobile is-multiline">{albumList}</ul>;
     }
 }
-
-// const mapStateToProps = (state) => {
-//     return {
-//         saved_albums: state.albums.albums,
-//     };
-// };
 
 const mapDispatchToProps = (dispatch) => {
     return {
