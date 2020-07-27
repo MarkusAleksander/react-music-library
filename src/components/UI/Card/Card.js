@@ -22,6 +22,22 @@ const Card = (props) => {
               })
             : null;
 
+    const actions =
+        props.actions && props.actions.length
+            ? props.actions.map((action, idx) => {
+                  return (
+                      <Button
+                          key={idx}
+                          className={["button", action.className].join(" ")}
+                          aria-label={action.content}
+                          onClick={action.onClick}
+                          content={action.content}
+                          status={action.status}
+                      />
+                  );
+              })
+            : null;
+
     return (
         <div className={["card", props.className].join(" ")}>
             {props.title ? (
@@ -38,6 +54,7 @@ const Card = (props) => {
             {props.content ? (
                 <div className="card-content">{props.content}</div>
             ) : null}
+            <div className="buttons is-centered">{actions}</div>
             {props.footer ? (
                 <div className="card-footer">{props.footer}</div>
             ) : null}

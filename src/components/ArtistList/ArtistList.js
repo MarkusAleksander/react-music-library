@@ -80,7 +80,7 @@ class ArtistList extends Component {
                         <Artist
                             artist_title={artist.artist_title}
                             artist_image={artist.artist_image}
-                            header_actions={[
+                            actions={[
                                 {
                                     onClick: () =>
                                         this.onSaveHandler(artist.artist_id),

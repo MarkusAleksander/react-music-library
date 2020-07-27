@@ -29,15 +29,53 @@ class AlbumList extends Component {
         }
     }
 
-    onSelectHandler = (id, status) => {
+    // onSelectHandler = (id, status) => {
+    //     // * Search to see if album is already saved
+    //     let album = this.props.album_data.find(
+    //         (album) => album.album_id === id
+    //     );
+
+    //     let endpoint, onResponse;
+
+    //     if (album.saved_state) {
+    //         // * then we're updating
+    //         endpoint = "/update-album";
+    //         onResponse = (res) => {
+    //             console.log(res);
+    //         };
+    //     } else {
+    //         endpoint = "/save-album";
+    //         onResponse = (res) => {
+    //             if (res.status === 200 && res.data.success_id) {
+    //                 this.props.onStoreAlbum({
+    //                     gfb_id: res.data.success_id,
+    //                     album_id: id,
+    //                     status: status,
+    //                 });
+    //             }
+    //         };
+    //     }
+
+    //     axios
+    //         .post(endpoint, {
+    //             album_id: id,
+    //             status: status,
+    //         })
+    //         .then(onResponse)
+    //         .catch((err) => {
+    //             console.log(err);
+    //         });
+    // };
+
+    onActionSelect = (album_id, action_selected) => {
         // * Search to see if album is already saved
         let album = this.props.album_data.find(
-            (album) => album.album_id === id
+            (album) => album.album_id === album_id
         );
 
         let endpoint, onResponse;
 
-        if (album.saved_state) {
+        if (album && album.have_status === "" && album.want_status === "") {
             // * then we're updating
             endpoint = "/update-album";
             onResponse = (res) => {
@@ -50,16 +88,22 @@ class AlbumList extends Component {
                     this.props.onStoreAlbum({
                         gfb_id: res.data.success_id,
                         album_id: id,
-                        status: status,
+                        status: action_selected,
                     });
                 }
             };
         }
 
+        if (action_selected === "want") {
+            album.want_status = "loading";
+        } else if (action_selected === "have") {
+            album.have_status = "loading";
+        }
+
         axios
             .post(endpoint, {
                 album_id: id,
-                status: status,
+                status: action_selected,
             })
             .then(onResponse)
             .catch((err) => {
@@ -69,41 +113,19 @@ class AlbumList extends Component {
 
     render() {
         const albumList = this.props.album_data.map((album) => {
-            const header_actions = [
-                {
-                    onClick:
-                        album.saved_state === "want"
-                            ? null
-                            : () =>
-                                  this.onSelectHandler(album.album_id, "want"),
-                    content: "Want",
-                    status: "",
-                    className:
-                        album.saved_state === "want" ? "is-primary" : "is-info",
-                },
-                {
-                    onClick:
-                        album.saved_state === "have"
-                            ? null
-                            : () =>
-                                  this.onSelectHandler(album.album_id, "have"),
-                    content: "Have",
-                    status: "",
-                    className:
-                        album.saved_state === "have" ? "is-primary" : "is-info",
-                },
-            ];
             return (
                 <li
                     key={album.album_id}
                     className="column is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"
                 >
                     <Album
-                        album_title={album.album_title}
-                        album_artist={album.album_artist}
-                        album_image={album.album_image}
-                        album_id={album.album_id}
-                        header_actions={header_actions}
+                        album_data={album}
+                        // album_title={album.album_title}
+                        // album_artist={album.album_artist}
+                        // album_image={album.album_image}
+                        // album_id={album.album_id}
+                        on_action={this.onActionSelect}
+                        // actions={actions}
                     />
                 </li>
             );
