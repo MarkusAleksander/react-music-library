@@ -3,26 +3,29 @@ import React from "react";
 import Card from "./../UI/Card/Card";
 
 const Album = (props) => {
+    // debugger;
     const actions = [
         {
             onClick:
-                props.album.have_status === "active"
+                props.album.status === "want"
                     ? null
-                    : () => props.onActionSelect(props.album.album_id, "want"),
+                    : () => props.on_action(props.album.album_id, "want"),
             content: "Want",
-            status: props.album.want_status,
+            status: props.album.status,
             className:
-                props.album.want_status === "active" ? "is-primary" : "is-info",
+                (props.album.status === "want" ? "is-primary" : "is-info") +
+                (props.album.status === "loading" ? " is-loading" : ""),
         },
         {
             onClick:
-                props.album.want_status === "active"
+                props.album.status === "have"
                     ? null
-                    : () => props.onActionSelect(props.album.album_id, "have"),
+                    : () => props.on_action(props.album.album_id, "have"),
             content: "Have",
-            status: props.album.have_status,
+            status: props.album.status,
             className:
-                props.album.have_status === "active" ? "is-primary" : "is-info",
+                (props.album.status === "have" ? "is-primary" : "is-info") +
+                (props.album.status === "loading" ? " is-loading" : ""),
         },
     ];
 

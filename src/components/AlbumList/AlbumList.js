@@ -12,121 +12,175 @@ class AlbumList extends Component {
         super(props);
 
         this.state = {
-            max_display_results: 6,
+            max_display_results: 8,
+            processed_albums: [],
         };
     }
 
     componentDidMount() {
         console.log("[AlbumList:componentDidMount]");
+        this.processAlbumData();
     }
 
     componentDidUpdate(prevProps) {
         console.log("[AlbumList:componentDidUpdate]");
-        if (prevProps.album_data !== this.props.album_data) {
+        if (
+            prevProps.albums !== this.props.albums ||
+            prevProps.saved_albums !== this.props.saved_albums
+        ) {
             console.log("[AlbumList:componentDidUpdate:props don't match]");
+            this.processAlbumData();
         } else {
             console.log("[AlbumList:componentDidUpdate:props match]");
         }
     }
 
-    // onSelectHandler = (id, status) => {
-    //     // * Search to see if album is already saved
-    //     let album = this.props.album_data.find(
-    //         (album) => album.album_id === id
-    //     );
+    processAlbumData = () => {
+        let saved_album_ids = [];
+        this.props.saved_albums.forEach((album) => {
+            saved_album_ids.push(album.album_id);
+        });
+        let processed_albums = this.props.albums.items
+            .slice(0, this.state.max_display_results)
+            .map((album) => {
+                let status = saved_album_ids.includes(album.id)
+                    ? this.props.saved_albums.find(
+                          (saved_album) => saved_album.album_id === album.id
+                      ).status
+                    : null;
 
-    //     let endpoint, onResponse;
+                return {
+                    album_title: album.name,
+                    album_id: album.id,
+                    album_image:
+                        album.images[0] && album.images[0].url
+                            ? album.images[0].url
+                            : null,
+                    album_artist:
+                        album.artists[0] && album.artists[0].name
+                            ? album.artists[0].name
+                            : null,
+                    album_artist_id:
+                        album.artists[0] && album.artists[0].id
+                            ? album.artists[0].id
+                            : null,
+                    status: status,
+                };
+            });
 
-    //     if (album.saved_state) {
-    //         // * then we're updating
-    //         endpoint = "/update-album";
-    //         onResponse = (res) => {
-    //             console.log(res);
-    //         };
-    //     } else {
-    //         endpoint = "/save-album";
-    //         onResponse = (res) => {
-    //             if (res.status === 200 && res.data.success_id) {
-    //                 this.props.onStoreAlbum({
-    //                     gfb_id: res.data.success_id,
-    //                     album_id: id,
-    //                     status: status,
-    //                 });
-    //             }
-    //         };
-    //     }
+        this.setState({
+            processed_albums: processed_albums,
+        });
+    };
 
-    //     axios
-    //         .post(endpoint, {
-    //             album_id: id,
-    //             status: status,
-    //         })
-    //         .then(onResponse)
-    //         .catch((err) => {
-    //             console.log(err);
-    //         });
-    // };
-
-    onActionSelect = (album_id, action_selected) => {
-        // * Search to see if album is already saved
-        let album = this.props.album_data.find(
+    onSaveHandler = (album_id, status) => {
+        let saved_album = this.props.saved_albums.find(
             (album) => album.album_id === album_id
         );
 
-        let endpoint, onResponse;
+        let endpoint, onResponse, onError, options, prevState;
 
-        if (album && album.have_status === "" && album.want_status === "") {
-            // * then we're updating
+        // * If we have album, then we're updating
+        if (saved_album && saved_album.status !== null) {
             endpoint = "/update-album";
+            // debugger;
+            options = {
+                album_id: album_id,
+                gfb_id: saved_album.gfb_id,
+                status: status,
+            };
+
+            // * set album to loading
+            prevState = saved_album.status;
+            saved_album.status = "loading";
+
+            let albums = [...this.state.processed_albums];
+            let album = albums.find((album) => album.album_id === album_id);
+
+            album.status = "loading";
+
+            this.setState({
+                processed_albums: albums,
+            });
+
+            // * send resquest
             onResponse = (res) => {
-                console.log(res);
+                if (res.status === 200 && res.data.success_id) {
+                    saved_album.status = status;
+                    this.props.onUpdateAlbum({
+                        gfb_id: res.data.success_id,
+                        album_id: album_id,
+                        album: saved_album,
+                    });
+                }
+            };
+
+            // * if on error, reset state
+            onError = (err) => {
+                let albums = [...this.state.processed_albums];
+                let album = albums.find((album) => album.album_id === album_id);
+
+                album.status = null;
+
+                this.setState({
+                    processed_albums: albums,
+                });
             };
         } else {
+            // * we're saving a new album
             endpoint = "/save-album";
+
+            options = {
+                album_id: album_id,
+                status: status,
+            };
+
+            let albums = [...this.state.processed_albums];
+            let album = albums.find((album) => album.album_id === album_id);
+
+            album.status = "loading";
+
+            this.setState({
+                processed_albums: albums,
+            });
+
             onResponse = (res) => {
                 if (res.status === 200 && res.data.success_id) {
                     this.props.onStoreAlbum({
                         gfb_id: res.data.success_id,
-                        album_id: id,
-                        status: action_selected,
+                        album_id: album_id,
+                        status: status,
                     });
                 }
             };
-        }
 
-        if (action_selected === "want") {
-            album.want_status = "loading";
-        } else if (action_selected === "have") {
-            album.have_status = "loading";
+            // * if on error, reset state
+            onError = (err) => {
+                let albums = [...this.state.processed_albums];
+                let album = albums.find((album) => album.album_id === album_id);
+
+                album.status = null;
+
+                this.setState({
+                    processed_albums: albums,
+                });
+            };
         }
 
         axios
-            .post(endpoint, {
-                album_id: id,
-                status: action_selected,
-            })
+            .post(endpoint, options)
             .then(onResponse)
-            .catch((err) => {
-                console.log(err);
-            });
+            .catch(onError);
     };
 
     render() {
-        const albumList = this.props.album_data.map((album) => {
+        const albumList = this.state.processed_albums.map((album) => {
             return (
                 <li
                     key={album.album_id}
                     className="column is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"
                 >
-                    <Album
-                        album_data={album}
-                        // album_title={album.album_title}
-                        // album_artist={album.album_artist}
-                        // album_image={album.album_image}
-                        // album_id={album.album_id}
-                        on_action={this.onActionSelect}
-                        // actions={actions}
-                    />
+                    <Album album={album} on_action={this.onSaveHandler} />
                 </li>
             );
         });
@@ -147,7 +201,18 @@ const mapDispatchToProps = (dispatch) => {
                 type: actionTypes.REMOVE_ALBUM,
                 album_id,
             }),
+        onUpdateAlbum: (album_data) =>
+            dispatch({
+                type: actionTypes.UPDATE_ALBUM,
+                album_data,
+            }),
     };
 };
 
-export default connect(/*mapStateToProps*/ null, mapDispatchToProps)(AlbumList);
+const mapStateToProps = (state) => {
+    return {
+        saved_albums: state.albums.albums,
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(AlbumList);

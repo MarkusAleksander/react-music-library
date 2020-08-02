@@ -16,6 +16,19 @@ const reducer = (state = initialState, action) => {
                 ...state,
                 albums: state.albums.concat(action.album_data),
             };
+        case actionTypes.UPDATE_ALBUM:
+            // debugger;
+            const albums = state.albums.filter((album) => {
+                return true;
+            });
+            let idx = albums.findIndex((album) => {
+                return album.album_id === action.album_data.album_id;
+            });
+            albums[idx] = action.album_data.album;
+            return {
+                ...state,
+                albums: albums,
+            };
         case actionTypes.REMOVE_ALBUM:
             const updateArray = state.albums.filter((album) => {
                 return album.album_id !== action.album_id;

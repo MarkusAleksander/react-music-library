@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 import { connect } from "react-redux";
-import * as actionTypes from "./../../store/actions.js";
+// import * as actionTypes from "./../../store/actions.js";
 
 import Auxillary from "./../../hoc/Auxillary";
 
@@ -22,16 +22,16 @@ class Search extends Component {
         this.setState(
             {
                 search_result: data,
-            },
-            this.processSearchResultData
+            }
+            // this.processSearchResultData
         );
     };
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps, prevState) {
         console.log("[Search:componentDidUpdate]");
         if (prevProps.saved_albums !== this.props.saved_albums) {
             console.log("[Search:componentDidUpdate:props don't match]");
-            this.processSearchResultData();
+            // this.processSearchResultData();
         } else {
             console.log("[Search:componentDidUpdate:props match]");
         }
@@ -47,7 +47,7 @@ class Search extends Component {
             .slice(0, this.state.max_display_results)
             .map((album) => {
                 let is_saved = saved_album_ids.includes(album.id);
-                let saved_state = is_saved
+                let status = is_saved
                     ? this.props.saved_albums.find(
                           (saved_album) => saved_album.album_id === album.id
                       ).status
@@ -68,7 +68,7 @@ class Search extends Component {
                         album.artists[0] && album.artists[0].id
                             ? album.artists[0].id
                             : null,
-                    saved_state: saved_state,
+                    status: status,
                 };
             });
 
@@ -120,13 +120,12 @@ class Search extends Component {
 
     render() {
         let search_results = null;
-
         if (
             this.state.search_result &&
             this.state.search_result.result_type === "album"
         ) {
             search_results = (
-                <AlbumList album_data={this.state.processed_album_data} />
+                <AlbumList albums={this.state.search_result.albums} />
             );
         } else if (
             this.state.search_result &&
