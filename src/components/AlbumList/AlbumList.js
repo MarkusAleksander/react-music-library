@@ -79,13 +79,55 @@ class AlbumList extends Component {
         );
 
         let endpoint, onResponse, onError, options, prevState;
+        // debugger;
+        // * f we have the album and the status is the same, we're removing it
+        if (saved_album && saved_album.status === status) {
+            endpoint = "/delete-album";
 
-        // * If we have album, then we're updating / deleting
-        if (saved_album && saved_album.status !== null) {
+            options = {
+                album_id: album_id,
+                gfb_id: saved_album.gfb_id,
+            };
+
+            // * set album to loading
+            prevState = saved_album.status;
+            saved_album.status = "loading";
+
+            let albums = [...this.state.processed_albums];
+            let album = albums.find((album) => album.album_id === album_id);
+
+            album.status = "loading";
+
+            this.setState({
+                processed_albums: albums,
+            });
+
+            // * send resquest
+            onResponse = (res) => {
+                if (res.status === 200 && res.data.success_id) {
+                    saved_album.status = res.data.status;
+                    this.props.onRemoveAlbum({
+                        gfb_id: res.data.success_id,
+                        album_id: album_id,
+                    });
+                }
+            };
+
+            // * if on error, reset state
+            onError = (err) => {
+                let albums = [...this.state.processed_albums];
+                let album = albums.find((album) => album.album_id === album_id);
+
+                album.status = null;
+
+                this.setState({
+                    processed_albums: albums,
+                });
+            };
+        }
+        // * If we have album, then we're updating and the status is different, it's an update
+        else if (saved_album && saved_album.status !== null) {
             endpoint = "/update-album";
-            if (saved_album.status === status) {
-                endpoint = "/delete-album";
-            }
 
             options = {
                 album_id: album_id,
@@ -199,10 +241,10 @@ const mapDispatchToProps = (dispatch) => {
                 type: actionTypes.STORE_ALBUM,
                 album_data,
             }),
-        onRemoveAlbum: (album_id) =>
+        onRemoveAlbum: (album_data) =>
             dispatch({
                 type: actionTypes.REMOVE_ALBUM,
-                album_id,
+                album_data,
             }),
         onUpdateAlbum: (album_data) =>
             dispatch({

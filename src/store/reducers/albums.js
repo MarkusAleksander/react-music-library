@@ -5,6 +5,7 @@ const initialState = {
 };
 
 const reducer = (state = initialState, action) => {
+    // debugger;
     switch (action.type) {
         case actionTypes.STORE_ALBUMS:
             return {
@@ -31,7 +32,10 @@ const reducer = (state = initialState, action) => {
             };
         case actionTypes.REMOVE_ALBUM:
             const updateArray = state.albums.filter((album) => {
-                return album.album_id !== action.album_id;
+                return (
+                    album.album_id !== action.album_data.album_id &&
+                    album.gfb_id !== action.album_data.gfb_id
+                );
             });
             return {
                 ...state,
