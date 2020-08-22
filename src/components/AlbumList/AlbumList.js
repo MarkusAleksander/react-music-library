@@ -80,10 +80,13 @@ class AlbumList extends Component {
 
         let endpoint, onResponse, onError, options, prevState;
 
-        // * If we have album, then we're updating
+        // * If we have album, then we're updating / deleting
         if (saved_album && saved_album.status !== null) {
             endpoint = "/update-album";
-            // debugger;
+            if (saved_album.status === status) {
+                endpoint = "/delete-album";
+            }
+
             options = {
                 album_id: album_id,
                 gfb_id: saved_album.gfb_id,
@@ -106,7 +109,7 @@ class AlbumList extends Component {
             // * send resquest
             onResponse = (res) => {
                 if (res.status === 200 && res.data.success_id) {
-                    saved_album.status = status;
+                    saved_album.status = res.data.status;
                     this.props.onUpdateAlbum({
                         gfb_id: res.data.success_id,
                         album_id: album_id,

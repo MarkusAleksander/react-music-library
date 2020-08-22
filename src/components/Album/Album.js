@@ -6,10 +6,7 @@ const Album = (props) => {
     // debugger;
     const actions = [
         {
-            onClick:
-                props.album.status === "want"
-                    ? null
-                    : () => props.on_action(props.album.album_id, "want"),
+            onClick: () => props.on_action(props.album.album_id, "want"),
             content: "Want",
             status: props.album.status,
             className:
@@ -17,10 +14,7 @@ const Album = (props) => {
                 (props.album.status === "loading" ? " is-loading" : ""),
         },
         {
-            onClick:
-                props.album.status === "have"
-                    ? null
-                    : () => props.on_action(props.album.album_id, "have"),
+            onClick: () => props.on_action(props.album.album_id, "have"),
             content: "Have",
             status: props.album.status,
             className:
