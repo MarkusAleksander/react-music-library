@@ -91,6 +91,7 @@ class AlbumList extends Component {
 
             // * set album to loading
             prevState = saved_album.status;
+            // TODO - needed when doing the same further down?
             saved_album.status = "loading";
 
             let albums = [...this.state.processed_albums];
@@ -118,7 +119,7 @@ class AlbumList extends Component {
                 let albums = [...this.state.processed_albums];
                 let album = albums.find((album) => album.album_id === album_id);
 
-                album.status = null;
+                album.status = prevState;
 
                 this.setState({
                     processed_albums: albums,
@@ -165,7 +166,7 @@ class AlbumList extends Component {
                 let albums = [...this.state.processed_albums];
                 let album = albums.find((album) => album.album_id === album_id);
 
-                album.status = null;
+                album.status = prevState;
 
                 this.setState({
                     processed_albums: albums,
@@ -204,7 +205,7 @@ class AlbumList extends Component {
                 let albums = [...this.state.processed_albums];
                 let album = albums.find((album) => album.album_id === album_id);
 
-                album.status = null;
+                album.status = prevState;
 
                 this.setState({
                     processed_albums: albums,

@@ -5,6 +5,7 @@ const initialState = {
 };
 
 const reducer = (state = initialState, action) => {
+    // debugger;
     switch (action.type) {
         case actionTypes.STORE_ARTISTS:
             return {
@@ -17,8 +18,12 @@ const reducer = (state = initialState, action) => {
                 artists: state.artists.concat(action.artist_data),
             };
         case actionTypes.REMOVE_ARTIST:
+            // debugger;
             const updateArray = state.artists.filter((artist) => {
-                return artist.artist_id !== action.artist_id;
+                return (
+                    artist.artist_id !== action.artist_data.artist_id &&
+                    artist.gfb_id !== action.artist_data.gfb_id
+                );
             });
             return {
                 ...state,

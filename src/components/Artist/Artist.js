@@ -7,10 +7,13 @@ const Artist = (props) => {
     const actions = [
         {
             onClick: () => props.on_action(props.artist.artist_id),
-            content: "Save",
+            content: props.artist.status === "saved" ? "Unsave" : "Save",
             className:
-                (props.artist.is_saved ? "is-primary" : "is-info") +
-                (props.artist.status === "loading" ? " is-loading" : ""),
+                props.artist.status === "saved"
+                    ? "is-primary"
+                    : props.artist.status === "loading"
+                    ? "is-info is-loading"
+                    : "is-info",
         },
     ];
 

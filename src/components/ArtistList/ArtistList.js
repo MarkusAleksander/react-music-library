@@ -52,7 +52,7 @@ class ArtistList extends Component {
                         artist.images[0] && artist.images[0].url
                             ? artist.images[0].url
                             : null,
-                    is_saved,
+                    status: is_saved ? "saved" : null,
                 };
             });
 
@@ -61,44 +61,110 @@ class ArtistList extends Component {
         });
     };
 
-    onSaveHandler = (id) => {
-        let is_saved = this.props.saved_artists.find((artist) => {
-            return artist.artist_id === id;
+    onSaveHandler = (artist_id) => {
+        let saved_artist = this.props.saved_artists.find((artist) => {
+            return artist.artist_id === artist_id;
         });
 
-        if (is_saved) {
-            let artist = is_saved;
+        let endpoint, onResponse, onError, options, prevState;
 
-            axios
-                .post("/unsave-artist", {
-                    artist_id: artist.artist_id,
-                    gfb_id: artist.gfb_id,
-                })
-                .then((res) => {
-                    if (res.status === 200 && res.data.success_id) {
-                        this.props.onRemoveArtist(res.data.success_id);
-                    }
-                })
-                .catch((err) => {
-                    console.log(err);
+        // debugger;
+
+        // * is saved, so we're deleting
+        if (saved_artist && saved_artist.status === "saved") {
+            endpoint = "/delete-artist";
+
+            options = {
+                artist_id: saved_artist.artist_id,
+                gfb_id: saved_artist.gfb_id,
+            };
+
+            // * set artist to loading
+            prevState = saved_artist.status;
+            // TODO - needed when doing the same further down?
+            saved_artist.status = "loading";
+
+            let artists = [...this.state.processed_artists];
+            let artist = artists.find(
+                (artist) => artist.artist_id === artist_id
+            );
+
+            artist.status = "loading";
+
+            this.setState({
+                processed_artists: artists,
+            });
+
+            onResponse = (res) => {
+                // debugger;
+                if (res.status === 200 && res.data.success_id) {
+                    this.props.onRemoveArtist({
+                        gfb_id: res.data.success_id,
+                        artist_id: artist_id,
+                    });
+                }
+            };
+
+            onError = (err) => {
+                let artists = [...this.state.processed_artists];
+                let artist = artists.find(
+                    (artist) => artist.artist_id === artist_id
+                );
+
+                artist.status = prevState;
+
+                this.setState({
+                    processed_artists: artists,
                 });
-        } else {
-            axios
-                .post("/save-artist", {
-                    artist_id: id,
-                })
-                .then((res) => {
-                    if (res.status === 200 && res.data.success_id) {
-                        this.props.onStoreArtist({
-                            gfb_id: res.data.success_id,
-                            artist_id: id,
-                        });
-                    }
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
+            };
         }
+        // * isn't saved, so we're saving
+        else {
+            endpoint = "/save-artist";
+
+            options = {
+                artist_id,
+            };
+
+            let artists = [...this.state.processed_artists];
+            let artist = artists.find(
+                (artist) => artist.artist_id === artist_id
+            );
+
+            artist.status = "loading";
+
+            this.setState({
+                processed_artists: artists,
+            });
+
+            onResponse = (res) => {
+                if (res.status === 200 && res.data.success_id) {
+                    this.props.onStoreArtist({
+                        gfb_id: res.data.success_id,
+                        artist_id: artist_id,
+                        status: "saved",
+                    });
+                }
+            };
+
+            onError = (err) => {
+                let artists = [...this.state.processed_artists];
+                let artist = artists.find(
+                    (artist) => artist.artist_id === artist_id
+                );
+
+                artist.status = prevState;
+
+                this.setState({
+                    processed_artists: artists,
+                });
+            };
+        }
+
+        axios
+            .post(endpoint, options)
+            .then(onResponse)
+            .catch(onError);
     };
 
     render() {
@@ -127,10 +193,10 @@ const mapDispatchToProps = (dispatch) => {
                 type: actionTypes.STORE_ARTIST,
                 artist_data,
             }),
-        onRemoveArtist: (gfb_id) =>
+        onRemoveArtist: (artist_data) =>
             dispatch({
                 type: actionTypes.REMOVE_ARTIST,
-                gfb_id,
+                artist_data,
             }),
     };
 };

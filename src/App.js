@@ -72,6 +72,7 @@ class App extends Component {
                         new_array.push({
                             artist_id: res.data[keys[i]].artist_id,
                             gfb_id: keys[i],
+                            status: "saved",
                         });
                     }
                     this.props.onStoreArtists(new_array);
