@@ -8,6 +8,8 @@ import Modal from "./components/UI/Modal/Modal";
 
 import axios from "./netlify_api.js";
 
+import { REQUEST_TOKEN, GET_ALBUMS, GET_ARTISTS } from "./api_endpoints";
+
 import "bulma/css/bulma.css";
 import "./App.css";
 
@@ -21,8 +23,9 @@ class App extends Component {
     }
 
     componentDidMount() {
+        console.log("[App:componentDidMount]");
         axios
-            .get("/request-token")
+            .get(REQUEST_TOKEN)
             .then((res) => {
                 axios.interceptors.request.use((config) => {
                     if (!config.params) {
@@ -31,6 +34,9 @@ class App extends Component {
                     config.params["spotify_grant_token"] = res.data;
                     return config;
                 });
+                console.log(
+                    "[App:componentDidMount: updating spotify request token]"
+                );
                 this.setState({
                     has_spotify_request_token: true,
                 });
@@ -41,7 +47,7 @@ class App extends Component {
 
         // * send request for saved albums
         axios
-            .get("/get-saved-albums")
+            .get(GET_ALBUMS)
             .then((res) => {
                 console.log(res.data);
                 if (res.data) {
@@ -61,7 +67,7 @@ class App extends Component {
                 console.log(err);
             });
         axios
-            .get("/get-saved-artists")
+            .get(GET_ARTISTS)
             .then((res) => {
                 console.log(res.data);
                 if (res.data) {

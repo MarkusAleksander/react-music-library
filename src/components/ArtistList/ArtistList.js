@@ -7,6 +7,8 @@ import Artist from "./../Artist/Artist";
 
 import axios from "./../../netlify_api.js";
 
+import { SAVE_ARTIST, DELETE_ARTIST } from "./../../api_endpoints";
+
 class ArtistList extends Component {
     constructor(props) {
         super(props);
@@ -72,7 +74,7 @@ class ArtistList extends Component {
 
         // * is saved, so we're deleting
         if (saved_artist && saved_artist.status === "saved") {
-            endpoint = "/delete-artist";
+            endpoint = DELETE_ARTIST;
 
             options = {
                 artist_id: saved_artist.artist_id,
@@ -120,7 +122,7 @@ class ArtistList extends Component {
         }
         // * isn't saved, so we're saving
         else {
-            endpoint = "/save-artist";
+            endpoint = SAVE_ARTIST;
 
             options = {
                 artist_id,

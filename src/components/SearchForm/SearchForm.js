@@ -13,6 +13,7 @@ class SearchForm extends Component {
         this.state = {
             search_text: "",
             search_type: "album",
+            is_searching: false,
             options: [
                 {
                     text: "Artist",
@@ -39,6 +40,11 @@ class SearchForm extends Component {
 
         let result_type = this.state.search_type;
         // * send search request
+
+        this.setState({
+            is_searching: true,
+        });
+
         axios
             .get("/search", {
                 params: {
@@ -49,6 +55,9 @@ class SearchForm extends Component {
             .then((res) => {
                 res.data.result_type = result_type;
                 this.props.onsearchresponse(res.data);
+                this.setState({
+                    is_searching: false,
+                });
             })
             .catch((err) => console.log(err));
     };
@@ -76,7 +85,10 @@ class SearchForm extends Component {
                 />
                 <div className="control">
                     <Button
-                        className="is-primary"
+                        className={
+                            (this.state.is_searching ? "is-loading " : "") +
+                            "is-primary"
+                        }
                         onClick={this.handleClick}
                         content={"Search"}
                     />

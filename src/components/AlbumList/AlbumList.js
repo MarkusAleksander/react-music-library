@@ -7,6 +7,8 @@ import Album from "./../Album/Album";
 
 import axios from "./../../netlify_api.js";
 
+import { SAVE_ALBUM, DELETE_ALBUM, UPDATE_ALBUM } from "./../../api_endpoints";
+
 class AlbumList extends Component {
     constructor(props) {
         super(props);
@@ -82,7 +84,7 @@ class AlbumList extends Component {
         // debugger;
         // * f we have the album and the status is the same, we're removing it
         if (saved_album && saved_album.status === status) {
-            endpoint = "/delete-album";
+            endpoint = DELETE_ALBUM;
 
             options = {
                 album_id: album_id,
@@ -128,7 +130,7 @@ class AlbumList extends Component {
         }
         // * If we have album, then we're updating and the status is different, it's an update
         else if (saved_album && saved_album.status !== null) {
-            endpoint = "/update-album";
+            endpoint = UPDATE_ALBUM;
 
             options = {
                 album_id: album_id,
@@ -174,7 +176,7 @@ class AlbumList extends Component {
             };
         } else {
             // * we're saving a new album
-            endpoint = "/save-album";
+            endpoint = SAVE_ALBUM;
 
             options = {
                 album_id: album_id,
