@@ -3,8 +3,15 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import * as actionTypes from "./store/actions";
 
-import Search from "./containers/Search/Search";
+import { Route, Switch } from "react-router-dom";
+
+// * Components
 import Modal from "./components/UI/Modal/Modal";
+
+// * Containers
+import Search from "./containers/Search/Search";
+import SavedArtists from "./containers/SavedArtists/SavedArtists";
+import SavedAlbums from "./containers/SavedAlbums/SavedAlbums";
 
 import axios from "./netlify_api.js";
 
@@ -101,7 +108,12 @@ class App extends Component {
         return (
             <div className="App">
                 {modal}
-                <Search />
+                <Switch>
+                    <Route path="/search" component={Search} />
+                    <Route path="/artists" component={SavedArtists} />
+                    <Route path="/albums" component={SavedAlbums} />
+                    <Route path="/" exact component={Search} />
+                </Switch>
             </div>
         );
     }

@@ -42,7 +42,7 @@ class AlbumList extends Component {
         this.props.saved_albums.forEach((album) => {
             saved_album_ids.push(album.album_id);
         });
-        let processed_albums = this.props.albums.items
+        let processed_albums = this.props.albums
             .slice(0, this.state.max_display_results)
             .map((album) => {
                 let status = saved_album_ids.includes(album.id)
@@ -69,7 +69,6 @@ class AlbumList extends Component {
                     status: status,
                 };
             });
-
         this.setState({
             processed_albums: processed_albums,
         });

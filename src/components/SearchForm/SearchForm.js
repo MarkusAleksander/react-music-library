@@ -6,6 +6,8 @@ import Button from "./../UI/Button/Button";
 
 import axios from "./../../netlify_api";
 
+import { SEARCH } from "./../../api_endpoints";
+
 class SearchForm extends Component {
     constructor(props) {
         super(props);
@@ -46,7 +48,7 @@ class SearchForm extends Component {
         });
 
         axios
-            .get("/search", {
+            .get(SEARCH, {
                 params: {
                     query: this.state.search_text,
                     type: result_type,

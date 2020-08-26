@@ -39,10 +39,11 @@ class ArtistList extends Component {
 
     processArtistData = () => {
         let saved_artist_ids = [];
+        // debugger;
         this.props.saved_artists.forEach((artist) => {
             saved_artist_ids.push(artist.artist_id);
         });
-        let processed_artists = this.props.artists.items
+        let processed_artists = this.props.artists
             .slice(0, this.state.max_display_results)
             .map((artist) => {
                 let is_saved = saved_artist_ids.includes(artist.id);

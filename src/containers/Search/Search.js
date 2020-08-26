@@ -40,14 +40,14 @@ class Search extends Component {
             this.state.search_result.result_type === "album"
         ) {
             search_results = (
-                <AlbumList albums={this.state.search_result.albums} />
+                <AlbumList albums={this.state.search_result.albums.items} />
             );
         } else if (
             this.state.search_result &&
             this.state.search_result.result_type === "artist"
         ) {
             search_results = (
-                <ArtistList artists={this.state.search_result.artists} />
+                <ArtistList artists={this.state.search_result.artists.items} />
             );
         }
 
