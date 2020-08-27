@@ -45,6 +45,12 @@ class SavedAlbums extends Component {
         }
     }
 
+    componentDidMount() {
+        if (this.props.saved_albums.length && !this.state.album_data.length) {
+            this.getAlbumData();
+        }
+    }
+
     render() {
         let filtered_albums = this.state.album_data;
 

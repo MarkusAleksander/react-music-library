@@ -8,6 +8,9 @@ import { Route, Switch } from "react-router-dom";
 // * Components
 import Modal from "./components/UI/Modal/Modal";
 
+import Header from "./components/UI/Header/Header";
+import Navigation from "./components/Navigation/Navigation";
+
 // * Containers
 import Search from "./containers/Search/Search";
 import SavedArtists from "./containers/SavedArtists/SavedArtists";
@@ -52,7 +55,7 @@ class App extends Component {
                 console.log(err);
             });
 
-        // * send request for saved albums
+        // * send request for saved album ids
         axios
             .get(GET_ALBUMS)
             .then((res) => {
@@ -73,12 +76,12 @@ class App extends Component {
             .catch((err) => {
                 console.log(err);
             });
+
+        // * send request for saved artist ids
         axios
             .get(GET_ARTISTS)
             .then((res) => {
-                console.log(res.data);
                 if (res.data) {
-                    // returns object - convert to array
                     let keys = Object.keys(res.data);
                     let new_array = [];
                     for (let i = 0; i < keys.length; i++) {
@@ -88,7 +91,7 @@ class App extends Component {
                             status: "saved",
                         });
                     }
-                    this.props.onStoreArtists(new_array);
+                    this.props.onStoreArtistIds(new_array);
                 }
             })
             .catch((err) => {
@@ -108,6 +111,9 @@ class App extends Component {
         return (
             <div className="App">
                 {modal}
+                <Header>
+                    <Navigation />
+                </Header>
                 <Switch>
                     <Route path="/search" component={Search} />
                     <Route path="/artists" component={SavedArtists} />
@@ -128,10 +134,10 @@ const mapDispatchToProps = (dispatch) => {
                 album_data,
             });
         },
-        onStoreArtists: (artist_data) => {
+        onStoreArtistIds: (saved_artist_ids) => {
             dispatch({
-                type: actionTypes.STORE_ARTISTS,
-                artist_data,
+                type: actionTypes.STORE_SAVED_ARTIST_IDS,
+                saved_artist_ids,
             });
         },
     };

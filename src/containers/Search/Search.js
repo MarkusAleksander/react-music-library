@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 // import * as actionTypes from "./../../store/actions.js";
 
 import Auxillary from "./../../hoc/Auxillary";
+import * as actionTypes from "./../../store/actions";
 
 import SearchForm from "../../components/SearchForm/SearchForm";
 
@@ -12,21 +13,27 @@ import ArtistList from "./../../components/ArtistList/ArtistList";
 
 class Search extends Component {
     state = {
-        search_result: null,
-        max_display_results: 8,
-        processed_album_data: [],
-        processed_artist_data: [],
+        result_type: "",
     };
 
     handleSearchResponse = (data) => {
+        console.log("[Search:handleSearchResponse]");
+        let result_type = data.result_type;
+
         this.setState({
-            search_result: data,
+            result_type,
         });
+
+        if (result_type === "album") {
+            this.props.onStoreArtistQueryResults(data.artists.items);
+        } else if (result_type === "artist") {
+            this.props.onStoreArtistQueryResults(data.artists.items);
+        }
     };
 
     componentDidUpdate(prevProps, prevState) {
         console.log("[Search:componentDidUpdate]");
-        if (prevProps.saved_albums !== this.props.saved_albums) {
+        if (prevProps.queried_artist_data !== this.props.queried_artist_data) {
             console.log("[Search:componentDidUpdate:props don't match]");
         } else {
             console.log("[Search:componentDidUpdate:props match]");
@@ -35,19 +42,13 @@ class Search extends Component {
 
     render() {
         let search_results = null;
-        if (
-            this.state.search_result &&
-            this.state.search_result.result_type === "album"
-        ) {
+        if (this.state.result_type === "album") {
             search_results = (
-                <AlbumList albums={this.state.search_result.albums.items} />
+                <AlbumList albums={this.props.queried_artist_data} />
             );
-        } else if (
-            this.state.search_result &&
-            this.state.search_result.result_type === "artist"
-        ) {
+        } else if (this.state.result_type === "artist") {
             search_results = (
-                <ArtistList artists={this.state.search_result.artists.items} />
+                <ArtistList artists={this.props.queried_artist_data} />
             );
         }
 
@@ -62,11 +63,22 @@ class Search extends Component {
     }
 }
 
-const mapStateToProps = (state) => {
+const mapDispatchToProps = (dispatch) => {
     return {
-        saved_albums: state.albums.albums,
-        saved_artists: state.artists.artists,
+        onStoreArtistQueryResults: (queried_artist_data) => {
+            dispatch({
+                type: actionTypes.STORE_ARTIST_QUERY_RESULTS,
+                queried_artist_data: queried_artist_data,
+            });
+        },
     };
 };
 
-export default connect(mapStateToProps)(Search);
+const mapStateToProps = (state) => {
+    return {
+        // saved_albums: state.albums.albums,
+        queried_artist_data: state.artists.queried_artist_data,
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Search);

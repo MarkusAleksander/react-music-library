@@ -14,7 +14,7 @@ class ArtistList extends Component {
         super(props);
 
         this.state = {
-            max_display_results: 6,
+            max_display_results: 0,
             processed_artists: [],
         };
     }
@@ -28,7 +28,7 @@ class ArtistList extends Component {
         console.log("[ArtistList:componentDidUpdate]");
         if (
             prevProps.artists !== this.props.artists ||
-            prevProps.saved_artists !== this.props.saved_artists
+            prevProps.saved_artist_ids !== this.props.saved_artist_ids
         ) {
             console.log("[ArtistList:componentDidUpdate:props don't match]");
             this.processArtistData();
@@ -38,16 +38,18 @@ class ArtistList extends Component {
     }
 
     processArtistData = () => {
-        let saved_artist_ids = [];
-        // debugger;
-        this.props.saved_artists.forEach((artist) => {
-            saved_artist_ids.push(artist.artist_id);
-        });
-        let processed_artists = this.props.artists
-            .slice(0, this.state.max_display_results)
-            .map((artist) => {
-                let is_saved = saved_artist_ids.includes(artist.id);
+        let saved_id_list = this.props.saved_artist_ids.map(
+            (artist) => artist.artist_id
+        );
 
+        let processed_artists = this.props.artists
+            .slice(
+                0,
+                this.state.max_display_results
+                    ? this.state.max_display_results
+                    : this.props.artists.length
+            )
+            .map((artist) => {
                 return {
                     artist_title: artist.name,
                     artist_id: artist.id,
@@ -55,7 +57,7 @@ class ArtistList extends Component {
                         artist.images[0] && artist.images[0].url
                             ? artist.images[0].url
                             : null,
-                    status: is_saved ? "saved" : null,
+                    status: saved_id_list.includes(artist.id) ? "saved" : null,
                 };
             });
 
@@ -65,13 +67,11 @@ class ArtistList extends Component {
     };
 
     onSaveHandler = (artist_id) => {
-        let saved_artist = this.props.saved_artists.find((artist) => {
+        let saved_artist = this.props.saved_artist_ids.find((artist) => {
             return artist.artist_id === artist_id;
         });
 
         let endpoint, onResponse, onError, options, prevState;
-
-        // debugger;
 
         // * is saved, so we're deleting
         if (saved_artist && saved_artist.status === "saved") {
@@ -99,7 +99,6 @@ class ArtistList extends Component {
             });
 
             onResponse = (res) => {
-                // debugger;
                 if (res.status === 200 && res.data.success_id) {
                     this.props.onRemoveArtist({
                         gfb_id: res.data.success_id,
@@ -191,22 +190,22 @@ class ArtistList extends Component {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onStoreArtist: (artist_data) =>
+        onStoreArtist: (artist_to_add) =>
             dispatch({
-                type: actionTypes.STORE_ARTIST,
-                artist_data,
+                type: actionTypes.ADD_ARTIST,
+                artist_to_add,
             }),
-        onRemoveArtist: (artist_data) =>
+        onRemoveArtist: (artist_to_remove) =>
             dispatch({
                 type: actionTypes.REMOVE_ARTIST,
-                artist_data,
+                artist_to_remove,
             }),
     };
 };
 
 const mapStateToProps = (state) => {
     return {
-        saved_artists: state.artists.artists,
+        saved_artist_ids: state.artists.saved_artist_ids,
     };
 };
 
