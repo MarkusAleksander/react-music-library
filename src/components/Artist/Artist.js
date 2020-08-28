@@ -3,7 +3,7 @@ import React from "react";
 import Card from "./../UI/Card/Card";
 
 const Artist = (props) => {
-    // debugger;
+    // ;
     const actions = [
         {
             onClick: () => props.on_action(props.artist.artist_id),

@@ -2,7 +2,9 @@ import React, { Component } from "react";
 
 import { connect } from "react-redux";
 
-import Auxillary from "./../../hoc/Auxillary";
+import Level from "./../../components/UI/Level/Level";
+import Button from "./../../components/UI/Button/Button";
+import Input from "./../../components/UI/Input/Input";
 import * as actionTypes from "./../../store/actions";
 
 import ArtistList from "./../../components/ArtistList/ArtistList";
@@ -14,6 +16,8 @@ import { GET_ARTIST_DATA } from "./../../api_endpoints";
 class SavedArtists extends Component {
     state = {
         artist_data: [],
+        ordering: "",
+        filter_text: "",
     };
 
     componentDidMount() {
@@ -36,7 +40,7 @@ class SavedArtists extends Component {
     }
 
     requestArtistData = () => {
-        // debugger;
+        // ;
         console.log("[SavedArtists:requestArtistData]");
         // * get artist data from spotify
         // * if we have saved_artist_ids and we have artist_ids length != artist_data, request data
@@ -61,24 +65,104 @@ class SavedArtists extends Component {
         }
     };
 
-    render() {
-        // debugger;
-        let filtered_artists = this.props.saved_artist_data;
+    onChangeOrdering = (ordering) => {
+        if (ordering === "AZ" || ordering === "ZA") {
+            this.setState({ ordering });
+        }
+    };
 
-        if (filtered_artists.length) {
-            // debugger;
+    sortByAZ = (a, b) => {
+        let name_a = a.name.toLowerCase();
+        let name_b = b.name.toLowerCase();
+
+        if (name_a < name_b) {
+            return -1;
+        }
+        if (name_a > name_b) {
+            return 1;
+        }
+        return 0;
+    };
+
+    sortByZA = (a, b) => {
+        let name_a = a.name.toLowerCase();
+        let name_b = b.name.toLowerCase();
+
+        if (name_a < name_b) {
+            return 1;
+        }
+        if (name_a > name_b) {
+            return -1;
+        }
+        return 0;
+    };
+
+    updateFilterTest = (e) => {
+        let filter_text = e.target.value;
+
+        this.setState({
+            filter_text,
+        });
+    };
+
+    render() {
+        let filtered_artists = [...this.props.saved_artist_data];
+
+        if (this.state.filter_text !== "") {
+            filtered_artists = filtered_artists.filter((artist) =>
+                artist.name.toLowerCase().includes(this.state.filter_text)
+            );
+        }
+
+        if (this.state.ordering === "AZ") {
+            filtered_artists.sort(this.sortByAZ);
+        }
+        if (this.state.ordering === "ZA") {
+            filtered_artists.sort(this.sortByZA);
         }
 
         return (
-            <Auxillary>
-                <div className="section">
-                    {filtered_artists.length ? (
-                        <ArtistList artists={filtered_artists} />
-                    ) : (
-                        <p>Loading...</p>
-                    )}
-                </div>
-            </Auxillary>
+            <div className="section">
+                <Level
+                    level_left_content={[
+                        <div className="buttons">
+                            <Button
+                                className={
+                                    this.state.ordering === "AZ"
+                                        ? "is-primary"
+                                        : "is-info"
+                                }
+                                content="A-Z"
+                                onClick={() => this.onChangeOrdering("AZ")}
+                            />
+                            <Button
+                                className={
+                                    this.state.ordering === "ZA"
+                                        ? "is-primary"
+                                        : "is-info"
+                                }
+                                content="Z-A"
+                                onClick={() => this.onChangeOrdering("ZA")}
+                            />
+                        </div>,
+                        <Input
+                            onchange={this.updateFilterTest}
+                            value={this.state.filter_text}
+                        />,
+                    ]}
+                    level_right_content={[
+                        <div className="has-text-centered">
+                            <p className="heading">Num Artists</p>
+                            <p className="title">{filtered_artists.length}</p>
+                        </div>,
+                    ]}
+                />
+                {filtered_artists.length ? (
+                    <ArtistList artists={filtered_artists} />
+                ) : (
+                    <p>Loading...</p>
+                )}
+            </div>
         );
     }
 }

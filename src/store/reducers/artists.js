@@ -13,14 +13,14 @@ const reducer = (state = initialState, action) => {
     switch (action.type) {
         // * store saved ids from firebase
         case actionTypes.STORE_SAVED_ARTIST_IDS:
-            // debugger;
+            // ;
             return {
                 ...state,
                 saved_artist_ids: action.saved_artist_ids,
             };
         // * store saved artist data
         case actionTypes.STORE_SAVED_ARTIST_DATA:
-            // debugger;
+            // ;
             return {
                 ...state,
                 saved_artist_data: action.saved_artist_data,

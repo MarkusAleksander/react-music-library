@@ -170,21 +170,18 @@ class ArtistList extends Component {
     };
 
     render() {
-        return (
-            <ul className="columns is-mobile is-multiline">
-                {this.state.processed_artists.map((artist) => (
-                    <li
-                        key={artist.artist_id}
-                        className="column is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"
-                    >
-                        <Artist
-                            artist={artist}
-                            on_action={this.onSaveHandler}
-                        />
-                    </li>
-                ))}
-            </ul>
-        );
+        const artistList = this.state.processed_artists.map((artist) => {
+            return (
+                <li
+                    key={artist.artist_id}
+                    className="column is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"
+                >
+                    <Artist artist={artist} on_action={this.onSaveHandler} />
+                </li>
+            );
+        });
+
+        return <ul className="columns is-mobile is-multiline">{artistList}</ul>;
     }
 }
 

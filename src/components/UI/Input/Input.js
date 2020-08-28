@@ -2,7 +2,7 @@ import React from "react";
 
 const input = (props) => (
     <div className="field">
-        <label className="label">{props.label}</label>
+        {props.label ? <label className="label">{props.label}</label> : null}
         <div className="control">
             <input
                 className="input"

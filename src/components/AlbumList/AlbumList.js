@@ -25,7 +25,6 @@ class AlbumList extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        debugger;
         console.log("[AlbumList:componentDidUpdate]");
         if (
             prevProps.albums !== this.props.albums ||

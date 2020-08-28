@@ -2,7 +2,9 @@ import React, { Component } from "react";
 
 import { connect } from "react-redux";
 
-import Auxillary from "./../../hoc/Auxillary";
+import Level from "./../../components/UI/Level/Level";
+import Button from "./../../components/UI/Button/Button";
+import Input from "./../../components/UI/Input/Input";
 import * as actionTypes from "./../../store/actions";
 
 import AlbumList from "./../../components/AlbumList/AlbumList";
@@ -14,6 +16,8 @@ import { GET_ALBUM_DATA } from "./../../api_endpoints";
 class SavedAlbums extends Component {
     state = {
         album_data: [],
+        ordering: "",
+        filter_text: "",
     };
 
     componentDidMount() {
@@ -36,7 +40,7 @@ class SavedAlbums extends Component {
     }
 
     requestAlbumData = () => {
-        // debugger;
+        // ;
         console.log("[SavedAlbums:requestAlbumData]");
         // * get album data from spotify
         // * if we have saved_album_ids and we have album_ids length != album_data, request data
@@ -61,22 +65,103 @@ class SavedAlbums extends Component {
         }
     };
 
-    render() {
-        let filtered_albums = this.props.saved_album_data;
+    onChangeOrdering = (ordering) => {
+        if (ordering === "AZ" || ordering === "ZA") {
+            this.setState({ ordering });
+        }
+    };
 
-        if (filtered_albums.length) {
+    sortByAZ = (a, b) => {
+        let name_a = a.name.toLowerCase();
+        let name_b = b.name.toLowerCase();
+
+        if (name_a < name_b) {
+            return -1;
+        }
+        if (name_a > name_b) {
+            return 1;
+        }
+        return 0;
+    };
+
+    sortByZA = (a, b) => {
+        let name_a = a.name.toLowerCase();
+        let name_b = b.name.toLowerCase();
+
+        if (name_a < name_b) {
+            return 1;
+        }
+        if (name_a > name_b) {
+            return -1;
+        }
+        return 0;
+    };
+
+    updateFilterTest = (e) => {
+        let filter_text = e.target.value;
+
+        this.setState({
+            filter_text,
+        });
+    };
+
+    render() {
+        let filtered_albums = [...this.props.saved_album_data];
+
+        if (this.state.filter_text !== "") {
+            filtered_albums = filtered_albums.filter((album) =>
+                album.name.toLowerCase().includes(this.state.filter_text)
+            );
         }
 
+        if (this.state.ordering === "AZ") {
+            filtered_albums.sort(this.sortByAZ);
+        }
+        if (this.state.ordering === "ZA") {
+            filtered_albums.sort(this.sortByZA);
+        }
         return (
-            <Auxillary>
-                <div className="section">
-                    {filtered_albums.length ? (
-                        <AlbumList albums={filtered_albums} />
-                    ) : (
-                        <p>Loading...</p>
-                    )}
-                </div>
-            </Auxillary>
+            <div className="section">
+                <Level
+                    level_left_content={[
+                        <div className="buttons">
+                            <Button
+                                className={
+                                    this.state.ordering === "AZ"
+                                        ? "is-primary"
+                                        : "is-info"
+                                }
+                                content="A-Z"
+                                onClick={() => this.onChangeOrdering("AZ")}
+                            />
+                            <Button
+                                className={
+                                    this.state.ordering === "ZA"
+                                        ? "is-primary"
+                                        : "is-info"
+                                }
+                                content="Z-A"
+                                onClick={() => this.onChangeOrdering("ZA")}
+                            />
+                        </div>,
+                        <Input
+                            onchange={this.updateFilterTest}
+                            value={this.state.filter_text}
+                        />,
+                    ]}
+                    level_right_content={[
+                        <div className="has-text-centered">
+                            <p className="heading">Num Albums</p>
+                            <p className="title">{filtered_albums.length}</p>
+                        </div>,
+                    ]}
+                />
+                {filtered_albums.length ? (
+                    <AlbumList albums={filtered_albums} />
+                ) : (
+                    <p>Loading...</p>
+                )}
+            </div>
         );
     }
 }
