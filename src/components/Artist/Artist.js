@@ -1,9 +1,9 @@
 import React from "react";
 
+import LazyImage from "./../UI/LazyImage/LazyImage";
 import Card from "./../UI/Card/Card";
 
 const Artist = (props) => {
-    // ;
     const actions = [
         {
             onClick: () => props.on_action(props.artist.artist_id),
@@ -24,7 +24,11 @@ const Artist = (props) => {
             actions={actions}
             image={
                 props.artist.artist_image ? (
-                    <img alt="" src={props.artist.artist_image} />
+                    <LazyImage
+                        src={props.artist.artist_image}
+                        height="640"
+                        width="640"
+                    />
                 ) : null
             }
             content={<p>{props.artist.artist_title}</p>}
