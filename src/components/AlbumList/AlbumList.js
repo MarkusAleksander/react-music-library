@@ -14,7 +14,7 @@ class AlbumList extends Component {
         super(props);
 
         this.state = {
-            max_display_results: 8,
+            max_display_results: 0,
             processed_albums: [],
         };
     }
@@ -25,10 +25,11 @@ class AlbumList extends Component {
     }
 
     componentDidUpdate(prevProps) {
+        debugger;
         console.log("[AlbumList:componentDidUpdate]");
         if (
             prevProps.albums !== this.props.albums ||
-            prevProps.saved_albums !== this.props.saved_albums
+            prevProps.saved_album_ids !== this.props.saved_album_ids
         ) {
             console.log("[AlbumList:componentDidUpdate:props don't match]");
             this.processAlbumData();
@@ -38,15 +39,20 @@ class AlbumList extends Component {
     }
 
     processAlbumData = () => {
-        let saved_album_ids = [];
-        this.props.saved_albums.forEach((album) => {
-            saved_album_ids.push(album.album_id);
-        });
+        let saved_album_ids = this.props.saved_album_ids.map(
+            (album) => album.album_id
+        );
+
         let processed_albums = this.props.albums
-            .slice(0, this.state.max_display_results)
+            .slice(
+                0,
+                this.state.max_display_results
+                    ? this.state.max_display_results
+                    : this.props.albums.length
+            )
             .map((album) => {
                 let status = saved_album_ids.includes(album.id)
-                    ? this.props.saved_albums.find(
+                    ? this.props.saved_album_ids.find(
                           (saved_album) => saved_album.album_id === album.id
                       ).status
                     : null;
@@ -75,7 +81,7 @@ class AlbumList extends Component {
     };
 
     onSaveHandler = (album_id, status) => {
-        let saved_album = this.props.saved_albums.find(
+        let saved_album = this.props.saved_album_ids.find(
             (album) => album.album_id === album_id
         );
 
@@ -238,27 +244,27 @@ class AlbumList extends Component {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onStoreAlbum: (album_data) =>
+        onStoreAlbum: (album_to_add) =>
             dispatch({
-                type: actionTypes.STORE_ALBUM,
-                album_data,
+                type: actionTypes.ADD_ALBUM,
+                album_to_add,
             }),
-        onRemoveAlbum: (album_data) =>
+        onRemoveAlbum: (album_to_remove) =>
             dispatch({
                 type: actionTypes.REMOVE_ALBUM,
-                album_data,
+                album_to_remove,
             }),
-        onUpdateAlbum: (album_data) =>
+        onUpdateAlbum: (album_to_update) =>
             dispatch({
                 type: actionTypes.UPDATE_ALBUM,
-                album_data,
+                album_to_update,
             }),
     };
 };
 
 const mapStateToProps = (state) => {
     return {
-        saved_albums: state.albums.albums,
+        saved_album_ids: state.albums.saved_album_ids,
     };
 };
 

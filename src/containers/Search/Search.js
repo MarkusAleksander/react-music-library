@@ -25,7 +25,7 @@ class Search extends Component {
         });
 
         if (result_type === "album") {
-            this.props.onStoreArtistQueryResults(data.artists.items);
+            this.props.onStoreAlbumQueryResults(data.albums.items);
         } else if (result_type === "artist") {
             this.props.onStoreArtistQueryResults(data.artists.items);
         }
@@ -33,7 +33,10 @@ class Search extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         console.log("[Search:componentDidUpdate]");
-        if (prevProps.queried_artist_data !== this.props.queried_artist_data) {
+        if (
+            prevProps.queried_artist_data !== this.props.queried_artist_data ||
+            prevProps.queried_album_data !== this.props.queried_album_data
+        ) {
             console.log("[Search:componentDidUpdate:props don't match]");
         } else {
             console.log("[Search:componentDidUpdate:props match]");
@@ -44,7 +47,7 @@ class Search extends Component {
         let search_results = null;
         if (this.state.result_type === "album") {
             search_results = (
-                <AlbumList albums={this.props.queried_artist_data} />
+                <AlbumList albums={this.props.queried_album_data} />
             );
         } else if (this.state.result_type === "artist") {
             search_results = (
@@ -71,12 +74,18 @@ const mapDispatchToProps = (dispatch) => {
                 queried_artist_data: queried_artist_data,
             });
         },
+        onStoreAlbumQueryResults: (queried_album_data) => {
+            dispatch({
+                type: actionTypes.STORE_ALBUM_QUERY_RESULTS,
+                queried_album_data: queried_album_data,
+            });
+        },
     };
 };
 
 const mapStateToProps = (state) => {
     return {
-        // saved_albums: state.albums.albums,
+        queried_album_data: state.albums.queried_album_data,
         queried_artist_data: state.artists.queried_artist_data,
     };
 };

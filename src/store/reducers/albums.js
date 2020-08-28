@@ -1,45 +1,68 @@
 import * as actionTypes from "./../actions";
 
 const initialState = {
-    albums: [],
+    // * list of ids and gfb_ids
+    saved_album_ids: [],
+    // * list of actual artist data
+    saved_album_data: [],
+    // * current queried album data
+    queried_album_data: [],
 };
 
 const reducer = (state = initialState, action) => {
-    // debugger;
     switch (action.type) {
-        case actionTypes.STORE_ALBUMS:
+        // * store saved ids from firebase
+        case actionTypes.STORE_SAVED_ALBUM_IDS:
             return {
                 ...state,
-                albums: action.album_data,
+                saved_album_ids: action.saved_album_ids,
             };
-        case actionTypes.STORE_ALBUM:
+        // * store saved album data
+        case actionTypes.STORE_SAVED_ALBUM_DATA:
             return {
                 ...state,
-                albums: state.albums.concat(action.album_data),
+                saved_album_data: action.saved_album_data,
+            };
+        // * add album to the store
+        case actionTypes.ADD_ALBUM:
+            return {
+                ...state,
+                saved_album_ids: state.saved_album_ids.concat(
+                    action.album_to_add
+                ),
             };
         case actionTypes.UPDATE_ALBUM:
-            // debugger;
-            const albums = state.albums.filter((album) => {
+            const saved_albums = state.saved_album_ids.filter((album) => {
                 return true;
             });
-            let idx = albums.findIndex((album) => {
-                return album.album_id === action.album_data.album_id;
+            let idx = saved_albums.findIndex((album) => {
+                return album.album_id === action.album_to_update.album_id;
             });
-            albums[idx] = action.album_data.album;
+            saved_albums[idx] = action.album_to_update.album;
             return {
                 ...state,
-                albums: albums,
+                albums: saved_albums,
             };
         case actionTypes.REMOVE_ALBUM:
-            const updateArray = state.albums.filter((album) => {
+            const _filter = (album) => {
                 return (
-                    album.album_id !== action.album_data.album_id &&
-                    album.gfb_id !== action.album_data.gfb_id
+                    album.album_id !== action.album_to_remove.album_id &&
+                    album.gfb_id !== action.album_to_remove.gfb_id
                 );
-            });
+            };
+
+            const update_saved_ids = state.saved_album_ids.filter(_filter);
+            const update_saved_data = state.saved_album_data.filter(_filter);
+
             return {
                 ...state,
-                albums: updateArray,
+                saved_album_ids: update_saved_ids,
+                saved_album_data: update_saved_data,
+            };
+        case actionTypes.STORE_ALBUM_QUERY_RESULTS:
+            return {
+                ...state,
+                queried_album_data: action.queried_album_data,
             };
         default:
             return state;

@@ -5,10 +5,7 @@ import { connect } from "react-redux";
 import Auxillary from "./../../hoc/Auxillary";
 import * as actionTypes from "./../../store/actions";
 
-// import SearchForm from "../../components/SearchForm/SearchForm";
-
 import ArtistList from "./../../components/ArtistList/ArtistList";
-// import Artist from "../../components/Artist/Artist";
 
 import axios from "./../../netlify_api";
 

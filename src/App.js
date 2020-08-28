@@ -127,11 +127,11 @@ class App extends Component {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onStoreAlbums: (album_data) => {
+        onStoreAlbums: (saved_album_ids) => {
             console.log("[onStoreAlbums]");
             dispatch({
-                type: actionTypes.STORE_ALBUMS,
-                album_data,
+                type: actionTypes.STORE_SAVED_ALBUM_IDS,
+                saved_album_ids,
             });
         },
         onStoreArtistIds: (saved_artist_ids) => {
