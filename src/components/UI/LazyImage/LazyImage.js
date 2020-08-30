@@ -4,7 +4,7 @@ class LazyImage extends Component {
     componentDidMount() {
         let observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
-                console.log("[checking entries...]");
+                // console.log("[checking entries...]");
                 const { isIntersecting } = entry;
 
                 if (isIntersecting) {

@@ -7,6 +7,7 @@ import Auxillary from "./../../hoc/Auxillary";
 import * as actionTypes from "./../../store/actions";
 
 import SearchForm from "../../components/SearchForm/SearchForm";
+import Load from "./../../components/Load/Load";
 
 import AlbumList from "./../../components/AlbumList/AlbumList";
 import ArtistList from "./../../components/ArtistList/ArtistList";
@@ -29,6 +30,10 @@ class Search extends Component {
         } else if (result_type === "artist") {
             this.props.onStoreArtistQueryResults(data.artists.items);
         }
+    };
+
+    handleLoadMore = () => {
+        console.log("[Search:handleLoadMore]");
     };
 
     componentDidUpdate(prevProps, prevState) {
@@ -60,7 +65,12 @@ class Search extends Component {
                 <div className="section">
                     <SearchForm onsearchresponse={this.handleSearchResponse} />
                 </div>
-                <div className="section">{search_results}</div>
+                {search_results ? (
+                    <div className="section">
+                        {search_results}
+                        <Load onIntersect={this.handleLoadMore} />
+                    </div>
+                ) : null}
             </Auxillary>
         );
     }
