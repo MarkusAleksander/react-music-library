@@ -109,9 +109,19 @@ class SavedAlbums extends Component {
         let filtered_albums = [...this.props.saved_album_data];
 
         if (this.state.filter_text !== "") {
-            filtered_albums = filtered_albums.filter((album) =>
-                album.name.toLowerCase().includes(this.state.filter_text)
-            );
+            filtered_albums = filtered_albums.filter((album) => {
+                // * search if in album title or album artist contains matching string
+                return (
+                    album.name.toLowerCase().includes(this.state.filter_text) ||
+                    album.artists.some((artist) => {
+                        return (
+                            artist.name
+                                .toLowerCase()
+                                .indexOf(this.state.filter_text) > -1
+                        );
+                    })
+                );
+            });
         }
 
         if (this.state.ordering === "AZ") {

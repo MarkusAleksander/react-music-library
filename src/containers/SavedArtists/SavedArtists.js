@@ -11,7 +11,7 @@ import ArtistList from "./../../components/ArtistList/ArtistList";
 
 import axios from "./../../netlify_api";
 
-import { GET_ARTIST_DATA } from "./../../api_endpoints";
+import { GET_ARTIST } from "./../../api_endpoints";
 
 class SavedArtists extends Component {
     state = {
@@ -51,7 +51,7 @@ class SavedArtists extends Component {
         ) {
             // * get artist data
             axios
-                .get(GET_ARTIST_DATA, {
+                .get(GET_ARTIST, {
                     params: {
                         artist_ids: this.props.saved_artist_ids.map(
                             (artist) => artist.artist_id

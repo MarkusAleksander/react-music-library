@@ -4,6 +4,14 @@ import LazyImage from "./../UI/LazyImage/LazyImage";
 import Card from "./../UI/Card/Card";
 
 const Artist = (props) => {
+    const header_actions = [
+        {
+            onClick: () => props.on_header_action(props.artist.artist_id),
+            content: "i",
+            className: "is-info",
+        },
+    ];
+
     const actions = [
         {
             onClick: () => props.on_action(props.artist.artist_id),
@@ -21,6 +29,7 @@ const Artist = (props) => {
         <Card
             className="artist"
             title={props.artist.artist_title}
+            header_actions={header_actions}
             actions={actions}
             image={
                 props.artist.artist_image ? (

@@ -7,7 +7,11 @@ import Artist from "./../Artist/Artist";
 
 import axios from "./../../netlify_api.js";
 
-import { SAVE_ARTIST, DELETE_ARTIST } from "./../../api_endpoints";
+import {
+    SAVE_ARTIST,
+    DELETE_ARTIST,
+    GET_ARTIST_DATA,
+} from "./../../api_endpoints";
 
 class ArtistList extends Component {
     constructor(props) {
@@ -169,6 +173,41 @@ class ArtistList extends Component {
             .catch(onError);
     };
 
+    onViewDetailHandler = (artist_id) => {
+        let saved_artist = this.props.saved_artist_ids.find((artist) => {
+            return artist.artist_id === artist_id;
+        });
+
+        if (!saved_artist) {
+            // * something went wrong...
+            return;
+        }
+
+        let endpoint, onResponse, onError, options;
+
+        options = {
+            params: {
+                artist_id,
+            },
+        };
+
+        endpoint = GET_ARTIST_DATA;
+
+        onResponse = (res) => {
+            if (res.status === 200 /*&& res.data.success_id*/) {
+                console.log(res.data);
+            }
+        };
+        onError = (error) => {
+            console.log(error);
+        };
+
+        axios
+            .get(endpoint, options)
+            .then(onResponse)
+            .catch(onError);
+    };
+
     render() {
         const artistList = this.state.processed_artists.map((artist) => {
             return (
@@ -176,7 +215,11 @@ class ArtistList extends Component {
                     key={artist.artist_id}
                     className="column is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"
                 >
-                    <Artist artist={artist} on_action={this.onSaveHandler} />
+                    <Artist
+                        artist={artist}
+                        on_header_action={this.onViewDetailHandler}
+                        on_action={this.onSaveHandler}
+                    />
                 </li>
             );
         });
