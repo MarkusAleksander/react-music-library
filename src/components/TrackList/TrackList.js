@@ -6,7 +6,7 @@ const TrackList = (props) => {
 
     const tracks = props.tracks.map((track) => {
         return (
-            <li><Track track={track} key={track.id} /></li>
+            <li key={track.id}><Track track={track} /></li>
         )
     });
 

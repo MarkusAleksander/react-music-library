@@ -6,7 +6,6 @@ import AlbumList from "./../AlbumList/AlbumList";
 import GenreList from "./../GenreList/GenreList";
 
 import Auxillary from "./../../hoc/Auxillary";
-import Genre from "../Genre/Genre";
 
 const ArtistDetails = (props) => {
     return (
@@ -19,7 +18,7 @@ const ArtistDetails = (props) => {
                                 <img src={props.artist.artist_image} alt="" />
                                 : null}
                             <h1 className="title">{props.artist.artist_title}</h1>
-                            <GenreList genres={props.artist.genre} />
+                            <GenreList genres={props.artist.genres} />
                         </div>
                         <div className="column is-half">
                             <h2 className="subtitle">Top Tracks</h2>
