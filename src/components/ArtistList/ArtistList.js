@@ -61,6 +61,7 @@ class ArtistList extends Component {
                             ? artist.images[0].url
                             : null,
                     status: saved_id_list.includes(artist.id) ? "saved" : null,
+                    genres: artist.genres
                 };
             });
 
