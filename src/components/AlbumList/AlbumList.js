@@ -42,7 +42,10 @@ class AlbumList extends Component {
             (album) => album.album_id
         );
 
-        let processed_albums = this.props.albums
+        // * just albums, not singles / compilations
+        let filtered_albums = this.props.albums.filter((album) => { return album.album_type === "album" });
+
+        let processed_albums = filtered_albums
             .slice(
                 0,
                 this.state.max_display_results
@@ -52,8 +55,8 @@ class AlbumList extends Component {
             .map((album) => {
                 let status = saved_album_ids.includes(album.id)
                     ? this.props.saved_album_ids.find(
-                          (saved_album) => saved_album.album_id === album.id
-                      ).status
+                        (saved_album) => saved_album.album_id === album.id
+                    ).status
                     : null;
 
                 return {
@@ -230,14 +233,14 @@ class AlbumList extends Component {
             return (
                 <li
                     key={album.album_id}
-                    className="column is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"
+                    className={"column" + (this.props.layout_classname ? " ".concat(this.props.layout_classname) : "")}
                 >
                     <Album album={album} on_action={this.onSaveHandler} />
                 </li>
             );
         });
 
-        return <ul className="columns is-mobile is-multiline">{albumList}</ul>;
+        return <ul className="columns is-mobile is-multiline is-marginless">{albumList}</ul>;
     }
 }
 

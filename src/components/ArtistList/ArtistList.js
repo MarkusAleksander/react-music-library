@@ -9,8 +9,7 @@ import axios from "./../../netlify_api.js";
 
 import {
     SAVE_ARTIST,
-    DELETE_ARTIST,
-    // GET_ARTIST_DATA,
+    DELETE_ARTIST
 } from "./../../api_endpoints";
 
 class ArtistList extends Component {
@@ -213,7 +212,7 @@ class ArtistList extends Component {
             return (
                 <li
                     key={artist.artist_id}
-                    className="column is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"
+                    className={"column" + (this.props.layout_classname ? " ".concat(this.props.layout_classname) : "")}
                 >
                     <Artist
                         artist={artist}
@@ -224,7 +223,7 @@ class ArtistList extends Component {
             );
         });
 
-        return <ul className="columns is-mobile is-multiline">{artistList}</ul>;
+        return <ul className="columns is-mobile is-multiline is-marginless">{artistList}</ul>;
     }
 }
 

@@ -30,7 +30,7 @@ class SavedAlbums extends Component {
         if (
             prevProps.saved_album_ids !== this.props.saved_album_ids ||
             this.props.saved_album_ids.length !==
-                this.props.saved_album_data.length
+            this.props.saved_album_data.length
         ) {
             console.log("[SavedAlbums:componentDidUpdate:props don't match]");
             this.requestAlbumData();
@@ -47,7 +47,7 @@ class SavedAlbums extends Component {
         if (
             this.props.saved_album_ids.length &&
             this.props.saved_album_ids.length !==
-                this.props.saved_album_data.length
+            this.props.saved_album_data.length
         ) {
             // * get album data
             axios
@@ -167,10 +167,10 @@ class SavedAlbums extends Component {
                     ]}
                 />
                 {filtered_albums.length ? (
-                    <AlbumList albums={filtered_albums} />
+                    <AlbumList layout_classname={"is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"} albums={filtered_albums} />
                 ) : (
-                    <p>Loading...</p>
-                )}
+                        <p>Loading...</p>
+                    )}
             </div>
         );
     }

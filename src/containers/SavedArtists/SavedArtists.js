@@ -30,7 +30,7 @@ class SavedArtists extends Component {
         if (
             prevProps.saved_artist_ids !== this.props.saved_artist_ids ||
             this.props.saved_artist_ids.length !==
-                this.props.saved_artist_data.length
+            this.props.saved_artist_data.length
         ) {
             console.log("[SavedArtists:componentDidUpdate:props don't match]");
             this.requestArtistData();
@@ -47,7 +47,7 @@ class SavedArtists extends Component {
         if (
             this.props.saved_artist_ids.length &&
             this.props.saved_artist_ids.length !==
-                this.props.saved_artist_data.length
+            this.props.saved_artist_data.length
         ) {
             // * get artist data
             axios
@@ -158,10 +158,10 @@ class SavedArtists extends Component {
                     ]}
                 />
                 {filtered_artists.length ? (
-                    <ArtistList artists={filtered_artists} />
+                    <ArtistList layout_classname={"is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"} artists={filtered_artists} />
                 ) : (
-                    <p>Loading...</p>
-                )}
+                        <p>Loading...</p>
+                    )}
             </div>
         );
     }
