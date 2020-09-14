@@ -10,7 +10,7 @@ const Modal = (props) => (
         </div>
         {props.onclose ? (
             <Button
-                onclick={props.onclose}
+                onClick={props.onclose}
                 className="modal-close is-large"
                 aria-label="close"
             />

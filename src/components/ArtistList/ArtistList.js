@@ -10,7 +10,7 @@ import axios from "./../../netlify_api.js";
 import {
     SAVE_ARTIST,
     DELETE_ARTIST,
-    GET_ARTIST_DATA,
+    // GET_ARTIST_DATA,
 } from "./../../api_endpoints";
 
 class ArtistList extends Component {
@@ -173,40 +173,40 @@ class ArtistList extends Component {
             .catch(onError);
     };
 
-    onViewDetailHandler = (artist_id) => {
-        let saved_artist = this.props.saved_artist_ids.find((artist) => {
-            return artist.artist_id === artist_id;
-        });
+    // onViewDetailHandler = (artist_id) => {
+    //     let saved_artist = this.props.saved_artist_ids.find((artist) => {
+    //         return artist.artist_id === artist_id;
+    //     });
 
-        if (!saved_artist) {
-            // * something went wrong...
-            return;
-        }
+    //     if (!saved_artist) {
+    //         // * something went wrong...
+    //         return;
+    //     }
 
-        let endpoint, onResponse, onError, options;
+    //     let endpoint, onResponse, onError, options;
 
-        options = {
-            params: {
-                artist_id,
-            },
-        };
+    //     options = {
+    //         params: {
+    //             artist_id,
+    //         },
+    //     };
 
-        endpoint = GET_ARTIST_DATA;
+    //     endpoint = GET_ARTIST_DATA;
 
-        onResponse = (res) => {
-            if (res.status === 200 /*&& res.data.success_id*/) {
-                console.log(res.data);
-            }
-        };
-        onError = (error) => {
-            console.log(error);
-        };
+    //     onResponse = (res) => {
+    //         if (res.status === 200 /*&& res.data.success_id*/) {
+    //             console.log(res.data);
+    //         }
+    //     };
+    //     onError = (error) => {
+    //         console.log(error);
+    //     };
 
-        axios
-            .get(endpoint, options)
-            .then(onResponse)
-            .catch(onError);
-    };
+    //     axios
+    //         .get(endpoint, options)
+    //         .then(onResponse)
+    //         .catch(onError);
+    // };
 
     render() {
         const artistList = this.state.processed_artists.map((artist) => {
@@ -217,7 +217,7 @@ class ArtistList extends Component {
                 >
                     <Artist
                         artist={artist}
-                        on_header_action={this.onViewDetailHandler}
+                        // on_header_action={this.onViewDetailHandler}
                         on_action={this.onSaveHandler}
                     />
                 </li>
