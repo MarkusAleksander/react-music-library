@@ -6,18 +6,47 @@ class Track extends Component {
 
         this.state = {
             playing_audio: false,
+            has_loaded: false,
+            is_loading: false
         };
 
         this.audioRef = React.createRef();
     }
 
+    handleCanPlay = () => {
+        console.log("[handleCanPlay]");
+        // * event listener no longer needed
+        this.audioRef.current.removeEventListener("canplay", this.handleCanPlay);
+        this.setState({
+            is_loading: false,
+            has_loaded: true
+        });
+    }
+
     toggleAudio = () => {
-        this.setState(
-            {
-                playing_audio: !this.state.playing_audio,
-            },
-            this.handleAudioStatus
-        );
+        console.log("[toggleAudio]");
+        if (!this.state.has_loaded) {
+            this.setState({
+                is_loading: true
+            }, () => {
+                // * listen for when audio can play
+                this.audioRef.current.addEventListener("canplay", this.handleCanPlay);
+                this.setState(
+                    {
+                        playing_audio: !this.state.playing_audio,
+                    },
+                    this.handleAudioStatus
+                );
+            });
+        }
+        if (this.state.has_loaded) {
+            this.setState(
+                {
+                    playing_audio: !this.state.playing_audio,
+                },
+                this.handleAudioStatus
+            );
+        }
     };
 
     handleAudioStatus = () => {
@@ -29,42 +58,35 @@ class Track extends Component {
     };
 
     render() {
+
+        const icon_style = {
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate3d(-50%, -50%, 0)",
+            zIndex: "1",
+            fontSize: "2.4em",
+            color: "#fff"
+        };
+
         return (
-            <div className="track" onClick={this.toggleAudio}>
-                <div className="columns is-mobile">
+            <div className="track" onClick={() => { return this.props.track.preview_url ? this.toggleAudio() : null }}>
+                <div className="columns is-mobile is-vcentered">
                     <div
                         className="column is-one-third"
                         style={{ position: "relative" }}
                     >
                         {this.props.track.album.images &&
-                        this.props.track.album.images[0] ? (
-                            <img
-                                alt=""
-                                src={this.props.track.album.images[0].url}
-                            />
-                        ) : null}
-                        {this.props.preview_url && !this.state.playing_audio ? (
+                            this.props.track.album.images[0] ? (
+                                <img
+                                    alt=""
+                                    src={this.props.track.album.images[0].url}
+                                />
+                            ) : null}
+                        {this.props.track.preview_url ? (
                             <i
-                                class="far fa-play-circle"
-                                style={{
-                                    position: "absolute",
-                                    top: "50%",
-                                    left: "50%",
-                                    transform: "translate3d(-50%, -50%, 0)",
-                                    zIndex: "1",
-                                }}
-                            ></i>
-                        ) : this.props.preview_url &&
-                          this.state.playing_audio ? (
-                            <i
-                                class="fas fa-pause"
-                                style={{
-                                    position: "absolute",
-                                    top: "50%",
-                                    left: "50%",
-                                    transform: "translate3d(-50%, -50%, 0)",
-                                    zIndex: "1",
-                                }}
+                                className={this.state.playing_audio ? (this.state.is_loading ? "fas fa-truck-loading" : "fas fa-pause") : "far fa-play-circle"}
+                                style={icon_style}
                             ></i>
                         ) : null}
                     </div>
@@ -80,7 +102,7 @@ class Track extends Component {
                         <audio
                             style={{ display: "none" }}
                             src={this.props.track.preview_url}
-                            preload={"auto"}
+                            preload={"none"}
                             ref={this.audioRef}
                         ></audio>
                     ) : null}
