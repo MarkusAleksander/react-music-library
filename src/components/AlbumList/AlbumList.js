@@ -26,6 +26,7 @@ class AlbumList extends Component {
 
     componentDidUpdate(prevProps) {
         console.log("[AlbumList:componentDidUpdate]");
+        // debugger;
         if (
             prevProps.albums !== this.props.albums ||
             prevProps.saved_album_ids !== this.props.saved_album_ids
@@ -38,12 +39,12 @@ class AlbumList extends Component {
     }
 
     processAlbumData = () => {
-        let saved_album_ids = this.props.saved_album_ids.map(
+        let saved_album_ids = this.props.saved_album_ids.flat().map(
             (album) => album.album_id
         );
 
         // * just albums, not singles / compilations
-        let filtered_albums = this.props.albums.filter((album) => { return (album.album_type === "album" && album.album_group === "album") });
+        let filtered_albums = this.props.albums.filter((album) => { return ((album.album_type === "album" && album.album_group === "album") || album.type === "album") });
 
         let processed_albums = filtered_albums
             .slice(
@@ -54,7 +55,7 @@ class AlbumList extends Component {
             )
             .map((album) => {
                 let status = saved_album_ids.includes(album.id)
-                    ? this.props.saved_album_ids.find(
+                    ? this.props.saved_album_ids.flat().find(
                         (saved_album) => saved_album.album_id === album.id
                     ).status
                     : null;
@@ -75,6 +76,8 @@ class AlbumList extends Component {
                             ? album.artists[0].id
                             : null,
                     status: status,
+                    release_date: album.release_date,
+                    album_type: album.album_type
                 };
             });
         this.setState({
@@ -83,7 +86,7 @@ class AlbumList extends Component {
     };
 
     onSaveHandler = (album_id, status) => {
-        let saved_album = this.props.saved_album_ids.find(
+        let saved_album = this.props.saved_album_ids.flat().find(
             (album) => album.album_id === album_id
         );
 

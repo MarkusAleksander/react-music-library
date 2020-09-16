@@ -2,6 +2,7 @@ import React from "react";
 
 import LazyImage from "./../UI/LazyImage/LazyImage";
 import Card from "./../UI/Card/Card";
+import Auxillary from "../../hoc/Auxillary";
 
 const Album = (props) => {
     const actions = [
@@ -37,7 +38,13 @@ const Album = (props) => {
                     />
                 ) : null
             }
-            content={<p>{props.album.album_artist}</p>}
+            content={
+                <Auxillary>
+                    <p>{props.album.album_artist}</p>
+                    <p>{new Date(props.album.release_date).toDateString()}</p>
+                    <p className="is-capitalized">{props.album.album_type}</p>
+                </Auxillary>
+            }
             footer={null}
         />
     );

@@ -52,11 +52,11 @@ class Search extends Component {
         let search_results = null;
         if (this.state.result_type === "album") {
             search_results = (
-                <AlbumList albums={this.props.queried_album_data} />
+                <AlbumList layout_classname={"is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"} albums={this.props.queried_album_data} />
             );
         } else if (this.state.result_type === "artist") {
             search_results = (
-                <ArtistList artists={this.props.queried_artist_data} />
+                <ArtistList layout_classname={"is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"} artists={this.props.queried_artist_data} />
             );
         }
 

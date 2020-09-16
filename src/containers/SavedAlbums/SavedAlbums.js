@@ -15,9 +15,11 @@ import { GET_ALBUM_DATA } from "./../../api_endpoints";
 
 class SavedAlbums extends Component {
     state = {
-        album_data: [],
         ordering: "",
         filter_text: "",
+        request_limit: 20,
+        next_page: 0,
+        is_loading: false
     };
 
     componentDidMount() {
@@ -27,41 +29,58 @@ class SavedAlbums extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         console.log("[SavedAlbums:componentDidUpdate]");
+        // debugger;
+        // * intial request when store updates
         if (
-            prevProps.saved_album_ids !== this.props.saved_album_ids ||
-            this.props.saved_album_ids.length !==
-            this.props.saved_album_data.length
+            (this.props.saved_album_ids.length && !this.props.saved_album_data.length) &&
+            (this.state.next_page === 0 && !this.state.is_loading)
         ) {
-            console.log("[SavedAlbums:componentDidUpdate:props don't match]");
             this.requestAlbumData();
-        } else {
-            console.log("[SavedAlbums:componentDidUpdate:props match]");
+        } else if (prevProps.saved_album_ids !== this.props.saved_album_ids) {
+            // console.log("[SavedAlbums:componentDidUpdate:props match]");
+            debugger;
         }
     }
 
+    chunkArray = (myArray, chunk_size) => {
+        var results = [];
+
+        while (myArray.length) {
+            results.push(myArray.splice(0, chunk_size));
+        }
+
+        return results;
+    }
+
     requestAlbumData = () => {
-        // ;
         console.log("[SavedAlbums:requestAlbumData]");
         // * get album data from spotify
         // * if we have saved_album_ids and we have album_ids length != album_data, request data
         if (
-            this.props.saved_album_ids.length &&
-            this.props.saved_album_ids.length !==
-            this.props.saved_album_data.length
+            this.props.saved_album_ids.length && !this.state.is_loading
         ) {
             // * get album data
             axios
                 .get(GET_ALBUM_DATA, {
                     params: {
-                        album_ids: this.props.saved_album_ids.map(
+                        album_ids: this.props.saved_album_ids[this.state.next_page].map(
                             (album) => album.album_id
                         ),
                     },
                 })
                 .then((res) => {
                     this.props.onStoreAlbumData(res.data.albums);
+                    this.setState({
+                        is_loading: false
+                    });
                 })
                 .catch((err) => console.log(err));
+
+
+            this.setState({
+                is_loading: true,
+                next_page: this.state.next_page + 1
+            });
         }
     };
 
@@ -130,6 +149,7 @@ class SavedAlbums extends Component {
         if (this.state.ordering === "ZA") {
             filtered_albums.sort(this.sortByZA);
         }
+        // debugger;
         return (
             <div className="section">
                 <Level
