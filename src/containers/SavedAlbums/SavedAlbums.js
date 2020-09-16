@@ -30,9 +30,18 @@ class SavedAlbums extends Component {
 
 
     componentDidMount() {
-        console.log("[SavedAlbums:componentDidMount]");
-        this.requestAlbumData();
+        // * component is mounted - prepare the lazy loader observer for scroll api requests
         this.setUpLazyLoaderObserver();
+        // * is there already album data in the store?
+        if (this.props.saved_album_data_total) {
+            // * if so, what "page" are we up to?
+            this.setState({
+                next_page: this.props.saved_album_data.length
+            });
+        } else {
+            // * if not...
+            // this.requestAlbumData();
+        }
     }
 
     setUpLazyLoaderObserver = () => {
@@ -42,7 +51,7 @@ class SavedAlbums extends Component {
 
                 if (isIntersecting) {
                     console.log("loading more albums...");
-                    this.requestAlbumData();
+                    this.handleShouldRequestAlbumData();
                 }
             });
         });
@@ -51,47 +60,78 @@ class SavedAlbums extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.log("[SavedAlbums:componentDidUpdate]");
+        // * do we need to request data?
+
+        // * if we've just finished loading, don't do anything
+        if (prevState.is_loading && !this.state.is_loading) {
+            return;
+        }
+        this.handleShouldRequestAlbumData();
+    }
+
+    handleShouldRequestAlbumData = () => {
+        // * only get album data when
         if (
-            (this.props.saved_album_ids.length && !this.props.saved_album_data.length) &&
-            (this.state.next_page === 0 && !this.state.is_loading)
+            // * we have albums ids...
+            this.props.saved_album_ids_total
+            // * we haven't yet got all the album data
+            && this.props.saved_album_ids_total !== this.props.saved_album_data_total
+            // * and we're not currently loading data already
+            && !this.state.is_loading
         ) {
             this.requestAlbumData();
-        } else if (prevProps.saved_album_ids !== this.props.saved_album_ids) {
         }
     }
 
     requestAlbumData = () => {
-        console.log("[SavedAlbums:requestAlbumData]");
-        // * get album data from spotify
-        // * if we have saved_album_ids and we have album_ids length != album_data, request data
+        // * request the data from the api...
+        let requested_ids = [];
         if (
-            (this.props.saved_album_ids.length && !this.state.is_loading) &&
-            (this.props.saved_album_ids.length > this.state.next_page)
+            // * album id totals and album data totals don't match
+            this.props.saved_album_ids_total !== this.props.saved_album_data_total
+            // * and the number of album id chunks and album data chunks do match
+            && this.props.saved_album_ids.length === this.props.saved_album_data.length
         ) {
-            // * get album data
-            axios
-                .get(GET_ALBUM_DATA, {
-                    params: {
-                        album_ids: this.props.saved_album_ids[this.state.next_page].map(
-                            (album) => album.album_id
-                        ),
-                    },
-                })
-                .then((res) => {
-                    this.props.onStoreAlbumData(res.data.albums);
-                    this.setState({
-                        is_loading: false
-                    });
-                })
-                .catch((err) => console.log(err));
+            // * then we have an unfinished chunk (this could be after saving an album from Search, and not creating a new chunk)
+            let id_chunk = [...this.props.saved_album_ids[this.props.saved_album_ids.length - 1]];
+            let data_chunk = [...this.props.saved_album_data[this.props.saved_album_data.length - 1]];
 
+            let ids = id_chunk.map(id => id.album_id);
+            let datas = data_chunk.map(data => data.id);
 
-            this.setState({
-                is_loading: true,
-                next_page: this.state.next_page + 1
+            requested_ids = ids.filter((id) => {
+                // * return id where id is not in the data_chunk
+                return !datas.includes(id);
             });
+
+        } else {
+            // * otherwise, we're just getting the next chunk
+            requested_ids = this.props.saved_album_ids[this.state.next_page].map(
+                (album) => album.album_id
+            )
         }
+
+        axios
+            .get(GET_ALBUM_DATA, {
+                params: {
+                    album_ids: requested_ids,
+                },
+            })
+            .then((res) => {
+                // * store the returned results
+                this.props.onStoreAlbumData(res.data.albums);
+                // * signify we're no longer loading, and we're ready to get the next page
+                this.setState({
+                    is_loading: false,
+                    next_page: this.state.next_page + 1
+                });
+            })
+            .catch((err) => console.log(err));
+
+        // * signify we're loading
+        this.setState({
+            is_loading: true,
+        });
     };
 
     onChangeOrdering = (ordering) => {
@@ -135,7 +175,7 @@ class SavedAlbums extends Component {
     };
 
     render() {
-        let filtered_albums = [...this.props.saved_album_data];
+        let filtered_albums = this.props.saved_album_data.flat();
 
         if (this.state.filter_text !== "") {
             filtered_albums = filtered_albums.filter((album) => {
@@ -192,17 +232,15 @@ class SavedAlbums extends Component {
                     level_right_content={[
                         <div className="has-text-centered">
                             <p className="heading">Num Albums</p>
-                            <p className="title">{filtered_albums.length}</p>
+                            <p className="title">{this.props.saved_album_ids_total}</p>
                         </div>,
                     ]}
                 />
                 {filtered_albums.length ? (
                     <AlbumList layout_classname={"is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"} albums={filtered_albums} />
-                ) : (
-                        <p>Loading...</p>
-                    )}
+                ) : null}
                 <div className="lazy-loader" ref={this.lazy_loader_ref}>
-                    {this.state.is_loading ? <p>Loading more...</p> : null}
+                    {this.state.is_loading ? <div className="section"><p className="has-text-centered">Loading more...</p></div> : null}
                 </div>
             </div>
         );
@@ -223,6 +261,8 @@ const mapStateToProps = (state) => {
     return {
         saved_album_ids: state.albums.saved_album_ids,
         saved_album_data: state.albums.saved_album_data,
+        saved_album_ids_total: state.albums.saved_album_ids_total,
+        saved_album_data_total: state.albums.saved_album_data_total
     };
 };
 
