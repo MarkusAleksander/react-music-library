@@ -14,42 +14,51 @@ import axios from "./../../netlify_api";
 import { GET_ALBUM_DATA } from "./../../api_endpoints";
 
 class SavedAlbums extends Component {
-    state = {
-        ordering: "",
-        filter_text: "",
-        request_limit: 20,
-        next_page: 0,
-        is_loading: false
-    };
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            ordering: "",
+            filter_text: "",
+            next_page: 0,
+            is_loading: false
+        };
+
+        this.lazy_loader_ref = React.createRef();
+    }
+
 
     componentDidMount() {
         console.log("[SavedAlbums:componentDidMount]");
         this.requestAlbumData();
+        this.setUpLazyLoaderObserver();
+    }
+
+    setUpLazyLoaderObserver = () => {
+        let observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                const { isIntersecting } = entry;
+
+                if (isIntersecting) {
+                    console.log("loading more albums...");
+                    this.requestAlbumData();
+                }
+            });
+        });
+
+        observer.observe(this.lazy_loader_ref.current);
     }
 
     componentDidUpdate(prevProps, prevState) {
         console.log("[SavedAlbums:componentDidUpdate]");
-        // debugger;
-        // * intial request when store updates
         if (
             (this.props.saved_album_ids.length && !this.props.saved_album_data.length) &&
             (this.state.next_page === 0 && !this.state.is_loading)
         ) {
             this.requestAlbumData();
         } else if (prevProps.saved_album_ids !== this.props.saved_album_ids) {
-            // console.log("[SavedAlbums:componentDidUpdate:props match]");
-            debugger;
         }
-    }
-
-    chunkArray = (myArray, chunk_size) => {
-        var results = [];
-
-        while (myArray.length) {
-            results.push(myArray.splice(0, chunk_size));
-        }
-
-        return results;
     }
 
     requestAlbumData = () => {
@@ -57,7 +66,8 @@ class SavedAlbums extends Component {
         // * get album data from spotify
         // * if we have saved_album_ids and we have album_ids length != album_data, request data
         if (
-            this.props.saved_album_ids.length && !this.state.is_loading
+            (this.props.saved_album_ids.length && !this.state.is_loading) &&
+            (this.props.saved_album_ids.length > this.state.next_page)
         ) {
             // * get album data
             axios
@@ -149,7 +159,7 @@ class SavedAlbums extends Component {
         if (this.state.ordering === "ZA") {
             filtered_albums.sort(this.sortByZA);
         }
-        // debugger;
+
         return (
             <div className="section">
                 <Level
@@ -191,6 +201,9 @@ class SavedAlbums extends Component {
                 ) : (
                         <p>Loading...</p>
                     )}
+                <div className="lazy-loader" ref={this.lazy_loader_ref}>
+                    {this.state.is_loading ? <p>Loading more...</p> : null}
+                </div>
             </div>
         );
     }
