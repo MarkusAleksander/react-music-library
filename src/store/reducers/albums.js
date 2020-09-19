@@ -32,11 +32,13 @@ const reducer = (state = initialState, action) => {
     switch (action.type) {
         // * store saved ids from firebase
         case actionTypes.STORE_SAVED_ALBUM_IDS:
-            return {
-                ...state,
-                saved_album_ids: chunkArray(action.saved_album_ids),
-                saved_album_ids_total: action.saved_album_ids.length
-            };
+            {
+                return {
+                    ...state,
+                    saved_album_ids: chunkArray(action.saved_album_ids),
+                    saved_album_ids_total: action.saved_album_ids.length
+                };
+            }
         // * store saved album data
         case actionTypes.STORE_SAVED_ALBUM_DATA:
             {
@@ -95,10 +97,12 @@ const reducer = (state = initialState, action) => {
                 };
             }
         case actionTypes.STORE_ALBUM_QUERY_RESULTS:
-            return {
-                ...state,
-                queried_album_data: action.queried_album_data,
-            };
+            {
+                return {
+                    ...state,
+                    queried_album_data: action.queried_album_data,
+                };
+            }
         default:
             return state;
     }

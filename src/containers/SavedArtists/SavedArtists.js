@@ -14,55 +14,103 @@ import axios from "./../../netlify_api";
 import { GET_ARTIST } from "./../../api_endpoints";
 
 class SavedArtists extends Component {
-    state = {
-        artist_data: [],
-        ordering: "",
-        filter_text: "",
-    };
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            ordering: "",
+            filter_text: "",
+            next_page: 0,
+            is_loading: false
+        };
+
+        this.lazy_loader_ref = React.createRef();
+    }
 
     componentDidMount() {
-        console.log("[SavedArtists:componentDidMount]");
-        this.requestArtistData();
+        this.setUpLazyLoaderObserver();
+        // this.requestArtistData();
+        if (this.props.saved_artist_data_total) {
+            this.setState({
+                next_page: this.props.saved_artist_data.length
+            });
+        } else {
+            // 
+        }
+    }
+
+    setUpLazyLoaderObserver = () => {
+        let observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                const { isIntersecting } = entry;
+
+                if (isIntersecting) {
+                    console.log("loading more artists...");
+                    this.handleShouldRequestArtistData();
+                }
+            });
+        });
+
+        observer.observe(this.lazy_loader_ref.current);
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.log("[SavedArtists:componentDidUpdate]");
+        if (prevState.is_loading && !this.state.is_loading) {
+            return;
+        }
+        this.handleShouldRequestArtistData();
+    }
+
+    handleShouldRequestArtistData = () => {
         if (
-            prevProps.saved_artist_ids !== this.props.saved_artist_ids ||
-            this.props.saved_artist_ids.length !==
-            this.props.saved_artist_data.length
+            this.props.saved_artist_ids_total
+            && this.props.saved_artist_ids_total !== this.props.saved_artist_data_total
+            && !this.state.is_loading
         ) {
-            console.log("[SavedArtists:componentDidUpdate:props don't match]");
             this.requestArtistData();
-        } else {
-            console.log("[SavedArtists:componentDidUpdate:props match]");
         }
     }
 
     requestArtistData = () => {
-        // ;
-        console.log("[SavedArtists:requestArtistData]");
-        // * get artist data from spotify
-        // * if we have saved_artist_ids and we have artist_ids length != artist_data, request data
+        let requested_ids = [];
         if (
-            this.props.saved_artist_ids.length &&
-            this.props.saved_artist_ids.length !==
-            this.props.saved_artist_data.length
+            this.props.saved_artist_ids_total !== this.props.saved_artist_data_total
+            && this.props.saved_artist_ids.length === this.props.saved_artist_data.length
         ) {
-            // * get artist data
-            axios
-                .get(GET_ARTIST, {
-                    params: {
-                        artist_ids: this.props.saved_artist_ids.map(
-                            (artist) => artist.artist_id
-                        ),
-                    },
-                })
-                .then((res) => {
-                    this.props.onStoreArtistData(res.data.artists);
-                })
-                .catch((err) => console.log(err));
+            let id_chunk = [];
+            let data_chunk = [];
+
+            let ids = id_chunk.map(id => id.artist_id);
+            let datas = data_chunk.map(data => data.id);
+
+            requested_ids = ids.filter((id) => {
+                return !datas.includes(id);
+            });
+        } else {
+            requested_ids = this.props.saved_artist_ids[this.state.next_page].map(
+                (artist) => artist.artist_id
+            )
         }
+        // * get artist data
+        axios
+            .get(GET_ARTIST, {
+                params: {
+                    artist_ids: requested_ids
+                },
+            })
+            .then((res) => {
+                this.props.onStoreArtistData(res.data.artists);
+                this.setState({
+                    is_loading: false,
+                    next_page: this.state.next_page + 1
+                })
+            })
+            .catch((err) => console.log(err));
+
+        this.setState({
+            is_loading: true
+        });
     };
 
     onChangeOrdering = (ordering) => {
@@ -106,7 +154,7 @@ class SavedArtists extends Component {
     };
 
     render() {
-        let filtered_artists = [...this.props.saved_artist_data];
+        let filtered_artists = this.props.saved_artist_data.flat();
 
         if (this.state.filter_text !== "") {
             filtered_artists = filtered_artists.filter((artist) =>
@@ -153,15 +201,16 @@ class SavedArtists extends Component {
                     level_right_content={[
                         <div className="has-text-centered">
                             <p className="heading">Num Artists</p>
-                            <p className="title">{filtered_artists.length}</p>
+                            <p className="title">{this.props.saved_artist_ids_total}</p>
                         </div>,
                     ]}
                 />
                 {filtered_artists.length ? (
                     <ArtistList layout_classname={"is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"} artists={filtered_artists} />
-                ) : (
-                        <p>Loading...</p>
-                    )}
+                ) : null}
+                <div className="lazy-loader" ref={this.lazy_loader_ref}>
+                    {this.state.is_loading ? <div className="section"><p className="has-text-centered">Loading more...</p></div> : null}
+                </div>
             </div>
         );
     }
@@ -181,6 +230,8 @@ const mapStateToProps = (state) => {
     return {
         saved_artist_ids: state.artists.saved_artist_ids,
         saved_artist_data: state.artists.saved_artist_data,
+        saved_artist_ids_total: state.artists.saved_artist_ids_total,
+        saved_artist_data_total: state.artists.saved_artist_data_total
     };
 };
 
