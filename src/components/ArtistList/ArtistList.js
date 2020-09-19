@@ -41,10 +41,10 @@ class ArtistList extends Component {
     }
 
     processArtistData = () => {
-        let saved_id_list = this.props.saved_artist_ids.map(
+        let saved_id_list = this.props.saved_artist_ids.flat().map(
             (artist) => artist.artist_id
         );
-
+        // debugger;
         let processed_artists = this.props.artists
             .slice(
                 0,
@@ -71,7 +71,7 @@ class ArtistList extends Component {
     };
 
     onSaveHandler = (artist_id) => {
-        let saved_artist = this.props.saved_artist_ids.find((artist) => {
+        let saved_artist = this.props.saved_artist_ids.flat().find((artist) => {
             return artist.artist_id === artist_id;
         });
 

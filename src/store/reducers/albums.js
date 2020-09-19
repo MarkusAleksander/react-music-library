@@ -82,7 +82,7 @@ const reducer = (state = initialState, action) => {
                         album.gfb_id !== action.album_to_remove.gfb_id
                     );
                 });
-                const update_saved_data = state.saved_album_data.filter((album) => {
+                const update_saved_data = state.saved_album_data.flat().filter((album) => {
                     return (
                         album.id !== action.album_to_remove.album_id
                     );

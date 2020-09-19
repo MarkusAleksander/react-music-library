@@ -274,9 +274,11 @@ class SavedAlbums extends Component {
                 {filtered_albums.length ? (
                     <AlbumList layout_classname={"is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"} albums={filtered_albums} />
                 ) : null}
-                <div className="lazy-loader" ref={this.lazy_loader_ref}>
-                    {this.state.is_loading ? <div className="section"><p className="has-text-centered">Loading more...</p></div> : null}
-                </div>
+                {this.props.saved_album_ids_total === this.props.saved_album_data_total ? (
+                    <div className="lazy-loader" ref={this.lazy_loader_ref}>
+                        {this.state.is_loading ? <div className="section"><p className="has-text-centered">Loading more...</p></div> : null}
+                    </div>
+                ) : null}
             </div>
         );
     }

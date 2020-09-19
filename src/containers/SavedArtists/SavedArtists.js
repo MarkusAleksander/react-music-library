@@ -156,7 +156,7 @@ class SavedArtists extends Component {
 
     render() {
         let filtered_artists = this.props.saved_artist_data.flat();
-
+        // debugger;
         if (this.state.filter_text !== "") {
             filtered_artists = filtered_artists.filter((artist) =>
                 artist.name.toLowerCase().includes(this.state.filter_text)
@@ -209,9 +209,11 @@ class SavedArtists extends Component {
                 {filtered_artists.length ? (
                     <ArtistList layout_classname={"is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"} artists={filtered_artists} />
                 ) : null}
-                <div className="lazy-loader" ref={this.lazy_loader_ref}>
-                    {this.state.is_loading ? <div className="section"><p className="has-text-centered">Loading more...</p></div> : null}
-                </div>
+                {this.props.saved_artist_ids_total === this.props.saved_artist_data_total ? (
+                    <div className="lazy-loader" ref={this.lazy_loader_ref}>
+                        {this.state.is_loading ? <div className="section"><p className="has-text-centered">Loading more...</p></div> : null}
+                    </div>
+                ) : null}
             </div>
         );
     }

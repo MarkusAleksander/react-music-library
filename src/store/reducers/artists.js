@@ -68,7 +68,7 @@ const reducer = (state = initialState, action) => {
                         artist.gfb_id !== action.artist_to_remove.gfb_id
                     )
                 });
-                const updated_artist_data = state.saved_artist_data.filter((artist) => {
+                const updated_artist_data = state.saved_artist_data.flat().filter((artist) => {
                     return (
                         artist.id !== action.artist_to_remove.artist_id
                     )
