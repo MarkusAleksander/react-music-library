@@ -115,6 +115,7 @@ class SavedArtists extends Component {
 
     onChangeOrdering = (ordering) => {
         if (ordering === "AZ" || ordering === "ZA") {
+            if (ordering === this.state.ordering) ordering = "";
             this.setState({ ordering });
         }
     };

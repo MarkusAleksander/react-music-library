@@ -43,7 +43,7 @@ class AlbumList extends Component {
             (album) => album.album_id
         );
 
-        // * just albums, not singles / compilations
+        // TODO just albums, not singles / compilations
         let filtered_albums = this.props.albums.filter((album) => { return ((album.album_type === "album" && album.album_group === "album") || album.type === "album") });
 
         let processed_albums = filtered_albums

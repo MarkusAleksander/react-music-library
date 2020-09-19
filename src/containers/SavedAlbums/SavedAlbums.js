@@ -21,6 +21,7 @@ class SavedAlbums extends Component {
         this.state = {
             ordering: "",
             filter_text: "",
+            filter_status: "",
             next_page: 0,
             is_loading: false
         };
@@ -136,9 +137,17 @@ class SavedAlbums extends Component {
 
     onChangeOrdering = (ordering) => {
         if (ordering === "AZ" || ordering === "ZA") {
+            if (ordering === this.state.ordering) ordering = "";
             this.setState({ ordering });
         }
     };
+
+    onChangeFilterState = (filter_status) => {
+        if (filter_status === "have" || filter_status === "want") {
+            if (filter_status === this.state.filter_status) filter_status = "";
+            this.setState({ filter_status })
+        }
+    }
 
     sortByAZ = (a, b) => {
         let name_a = a.name.toLowerCase();
@@ -166,7 +175,7 @@ class SavedAlbums extends Component {
         return 0;
     };
 
-    updateFilterTest = (e) => {
+    updateFilterText = (e) => {
         let filter_text = e.target.value;
 
         this.setState({
@@ -176,7 +185,6 @@ class SavedAlbums extends Component {
 
     render() {
         let filtered_albums = this.props.saved_album_data.flat();
-
         if (this.state.filter_text !== "") {
             filtered_albums = filtered_albums.filter((album) => {
                 // * search if in album title or album artist contains matching string
@@ -198,6 +206,15 @@ class SavedAlbums extends Component {
         }
         if (this.state.ordering === "ZA") {
             filtered_albums.sort(this.sortByZA);
+        }
+
+        if (this.state.filter_status !== "") {
+            let filtered_ids = this.props.saved_album_ids.flat().filter(album => album.status === this.state.filter_status);
+            filtered_albums = filtered_albums.filter((album) => {
+                return (
+                    filtered_ids.find(a => a.album_id === album.id)
+                )
+            });
         }
 
         return (
@@ -223,9 +240,27 @@ class SavedAlbums extends Component {
                                 content="Z-A"
                                 onClick={() => this.onChangeOrdering("ZA")}
                             />
+                            <Button
+                                className={
+                                    this.state.filter_status === "have"
+                                        ? "is-primary"
+                                        : "is-info"
+                                }
+                                content="Have"
+                                onClick={() => this.onChangeFilterState("have")}
+                            />
+                            <Button
+                                className={
+                                    this.state.filter_status === "want"
+                                        ? "is-primary"
+                                        : "is-info"
+                                }
+                                content="Want"
+                                onClick={() => this.onChangeFilterState("want")}
+                            />
                         </div>,
                         <Input
-                            onchange={this.updateFilterTest}
+                            onchange={this.updateFilterText}
                             value={this.state.filter_text}
                         />,
                     ]}
