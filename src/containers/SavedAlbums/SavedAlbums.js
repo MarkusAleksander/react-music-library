@@ -23,12 +23,14 @@ class SavedAlbums extends Component {
             filter_text: "",
             filter_status: "",
             next_page: 0,
-            is_loading: false
+            is_loading: false,
+            observer_is_active: false
         };
+
+        this.observer = new IntersectionObserver(this.onObserve);
 
         this.lazy_loader_ref = React.createRef();
     }
-
 
     componentDidMount() {
         // * component is mounted - prepare the lazy loader observer for scroll api requests
@@ -43,21 +45,8 @@ class SavedAlbums extends Component {
             // * if not...
             // this.requestAlbumData();
         }
-    }
 
-    setUpLazyLoaderObserver = () => {
-        let observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                const { isIntersecting } = entry;
-
-                if (isIntersecting) {
-                    console.log("loading more albums...");
-                    this.handleShouldRequestAlbumData();
-                }
-            });
-        });
-
-        observer.observe(this.lazy_loader_ref.current);
+        this.handleObserver();
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -68,6 +57,48 @@ class SavedAlbums extends Component {
             return;
         }
         this.handleShouldRequestAlbumData();
+        this.handleObserver();
+    }
+
+    handleObserver = () => {
+        if (this.props.saved_album_ids_total && this.props.saved_album_ids_total === this.props.saved_album_data_total) {
+            this.disconnectLazyLoaderObserver();
+        } else {
+            this.setUpLazyLoaderObserver();
+        }
+    }
+
+    onObserve = (entries) => {
+        entries.forEach((entry) => {
+            const { isIntersecting } = entry;
+
+            if (isIntersecting) {
+                console.log("loading more albums...");
+                this.handleShouldRequestAlbumData();
+            }
+        });
+    }
+
+    setUpLazyLoaderObserver = () => {
+        if (this.state.observer_is_active) return;
+
+        console.log("[SavedAlbums:setUpLazyLoaderObserver]");
+
+        this.observer.observe(this.lazy_loader_ref.current);
+        this.setState({
+            observer_is_active: true
+        });
+    }
+
+    disconnectLazyLoaderObserver = () => {
+        if (!this.state.observer_is_active) return;
+
+        console.log("[SavedAlbums:disconnectLazyLoaderObserver]");
+
+        this.observer.disconnect();
+        this.setState({
+            observer_is_active: false
+        });
     }
 
     handleShouldRequestAlbumData = () => {
@@ -274,11 +305,11 @@ class SavedAlbums extends Component {
                 {filtered_albums.length ? (
                     <AlbumList layout_classname={"is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"} albums={filtered_albums} />
                 ) : null}
-                {this.props.saved_album_ids_total === this.props.saved_album_data_total ? (
-                    <div className="lazy-loader" ref={this.lazy_loader_ref}>
-                        {this.state.is_loading ? <div className="section"><p className="has-text-centered">Loading more...</p></div> : null}
-                    </div>
-                ) : null}
+                {/* {this.props.saved_album_ids_total !== this.props.saved_album_data_total ? ( */}
+                <div className="lazy-loader" ref={this.lazy_loader_ref}>
+                    {this.state.is_loading ? <div className="section"><p className="has-text-centered">Loading more...</p></div> : null}
+                </div>
+                {/* ) : null} */}
             </div>
         );
     }

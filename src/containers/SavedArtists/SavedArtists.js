@@ -22,8 +22,11 @@ class SavedArtists extends Component {
             ordering: "",
             filter_text: "",
             next_page: 0,
-            is_loading: false
+            is_loading: false,
+            observer_is_active: false
         };
+
+        this.observer = new IntersectionObserver(this.onObserve);
 
         this.lazy_loader_ref = React.createRef();
     }
@@ -38,21 +41,8 @@ class SavedArtists extends Component {
         } else {
             // 
         }
-    }
 
-    setUpLazyLoaderObserver = () => {
-        let observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
-                const { isIntersecting } = entry;
-
-                if (isIntersecting) {
-                    console.log("loading more artists...");
-                    this.handleShouldRequestArtistData();
-                }
-            });
-        });
-
-        observer.observe(this.lazy_loader_ref.current);
+        this.handleObserver();
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -60,6 +50,48 @@ class SavedArtists extends Component {
             return;
         }
         this.handleShouldRequestArtistData();
+        this.handleObserver();
+    }
+
+    handleObserver = () => {
+        if (this.props.saved_artist_ids_total && this.props.saved_artist_ids_total === this.props.saved_artist_data_total) {
+            this.disconnectLazyLoaderObserver();
+        } else {
+            this.setUpLazyLoaderObserver();
+        }
+    }
+
+    onObserve = (entries) => {
+        entries.forEach((entry) => {
+            const { isIntersecting } = entry;
+
+            if (isIntersecting) {
+                console.log("loading more artists...");
+                this.handleShouldRequestArtistData();
+            }
+        });
+    }
+
+    setUpLazyLoaderObserver = () => {
+        if (this.state.observer_is_active) return;
+
+        console.log("[SavedArtists:setUpLazyLoaderObserver]");
+
+        this.observer.observe(this.lazy_loader_ref.current);
+        this.setState({
+            observer_is_active: true
+        });
+    }
+
+    disconnectLazyLoaderObserver = () => {
+        if (!this.state.observer_is_active) return;
+
+        console.log("[SavedArtists:disconnectLazyLoaderObserver]");
+
+        this.observer.disconnect();
+        this.setState({
+            observer_is_active: false
+        });
     }
 
     handleShouldRequestArtistData = () => {
@@ -209,11 +241,11 @@ class SavedArtists extends Component {
                 {filtered_artists.length ? (
                     <ArtistList layout_classname={"is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"} artists={filtered_artists} />
                 ) : null}
-                {this.props.saved_artist_ids_total === this.props.saved_artist_data_total ? (
-                    <div className="lazy-loader" ref={this.lazy_loader_ref}>
-                        {this.state.is_loading ? <div className="section"><p className="has-text-centered">Loading more...</p></div> : null}
-                    </div>
-                ) : null}
+                {/* {this.props.saved_artist_ids_total !== this.props.saved_artist_data_total ? ( */}
+                <div className="lazy-loader" ref={this.lazy_loader_ref}>
+                    {this.state.is_loading ? <div className="section"><p className="has-text-centered">Loading more...</p></div> : null}
+                </div>
+                {/* ) : null} */}
             </div>
         );
     }
