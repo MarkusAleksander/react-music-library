@@ -22,6 +22,7 @@ class SavedAlbums extends Component {
             ordering: "",
             filter_text: "",
             filter_status: "",
+            // TODO - this is going to depend on number of current items
             next_page: 0,
             is_loading: false,
             observer_is_active: false
@@ -122,14 +123,12 @@ class SavedAlbums extends Component {
             // * album id totals and album data totals don't match
             this.props.saved_album_ids_total !== this.props.saved_album_data_total
             // * and the number of album id chunks and album data chunks do match
+            // TODO - required?
             && this.props.saved_album_ids.length === this.props.saved_album_data.length
         ) {
-            // * then we have an unfinished chunk (this could be after saving an album from Search, and not creating a new chunk)
-            let id_chunk = [...this.props.saved_album_ids[this.props.saved_album_ids.length - 1]];
-            let data_chunk = [...this.props.saved_album_data[this.props.saved_album_data.length - 1]];
-
-            let ids = id_chunk.map(id => id.album_id);
-            let datas = data_chunk.map(data => data.id);
+            // * find all new ids (have to account for items shifting around by removal etc)
+            let ids = this.props.saved_album_ids.flat().map(id => id.album_id);
+            let datas = this.props.saved_album_data.flat().map(data => data.id);
 
             requested_ids = ids.filter((id) => {
                 // * return id where id is not in the data_chunk
@@ -141,6 +140,11 @@ class SavedAlbums extends Component {
             requested_ids = this.props.saved_album_ids[this.state.next_page].map(
                 (album) => album.album_id
             )
+        }
+
+        // max 20 at any time
+        if (requested_ids.length > 20) {
+            requested_ids = requested_ids.slice(0, 19);
         }
 
         axios

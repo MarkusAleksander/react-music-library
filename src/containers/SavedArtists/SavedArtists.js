@@ -110,11 +110,8 @@ class SavedArtists extends Component {
             this.props.saved_artist_ids_total !== this.props.saved_artist_data_total
             && this.props.saved_artist_ids.length === this.props.saved_artist_data.length
         ) {
-            let id_chunk = [];
-            let data_chunk = [];
-
-            let ids = id_chunk.map(id => id.artist_id);
-            let datas = data_chunk.map(data => data.id);
+            let ids = this.props.saved_artist_ids.flat().map(id => id.artist_id);
+            let datas = this.props.saved_artist_data.flat().map(data => data.id);
 
             requested_ids = ids.filter((id) => {
                 return !datas.includes(id);
@@ -124,6 +121,12 @@ class SavedArtists extends Component {
                 (artist) => artist.artist_id
             )
         }
+
+        // max 20 at any time
+        if (requested_ids.length > 20) {
+            requested_ids = requested_ids.slice(0, 19);
+        }
+
         // * get artist data
         axios
             .get(GET_ARTIST, {
