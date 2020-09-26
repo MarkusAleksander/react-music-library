@@ -8,6 +8,7 @@ import Album from "./../Album/Album";
 import axios from "./../../netlify_api.js";
 
 import { SAVE_ALBUM, DELETE_ALBUM, UPDATE_ALBUM } from "./../../api_endpoints";
+import Modal from "../UI/Modal/Modal";
 
 class AlbumList extends Component {
     constructor(props) {
@@ -16,6 +17,7 @@ class AlbumList extends Component {
         this.state = {
             max_display_results: 0,
             processed_albums: [],
+            display_blocked_modal: false,
         };
     }
 
@@ -26,7 +28,6 @@ class AlbumList extends Component {
 
     componentDidUpdate(prevProps) {
         console.log("[AlbumList:componentDidUpdate]");
-        // debugger;
         if (
             prevProps.albums !== this.props.albums ||
             prevProps.saved_album_ids !== this.props.saved_album_ids
@@ -39,12 +40,18 @@ class AlbumList extends Component {
     }
 
     processAlbumData = () => {
-        let saved_album_ids = this.props.saved_album_ids.flat().map(
-            (album) => album.album_id
-        );
+        let saved_album_ids = this.props.saved_album_ids
+            .flat()
+            .map((album) => album.album_id);
 
         // TODO just albums, not singles / compilations
-        let filtered_albums = this.props.albums.filter((album) => { return ((album.album_type === "album" && album.album_group === "album") || album.type === "album") });
+        let filtered_albums = this.props.albums.filter((album) => {
+            return (
+                (album.album_type === "album" &&
+                    album.album_group === "album") ||
+                album.type === "album"
+            );
+        });
 
         let processed_albums = filtered_albums
             .slice(
@@ -55,9 +62,11 @@ class AlbumList extends Component {
             )
             .map((album) => {
                 let status = saved_album_ids.includes(album.id)
-                    ? this.props.saved_album_ids.flat().find(
-                        (saved_album) => saved_album.album_id === album.id
-                    ).status
+                    ? this.props.saved_album_ids
+                          .flat()
+                          .find(
+                              (saved_album) => saved_album.album_id === album.id
+                          ).status
                     : null;
 
                 return {
@@ -77,7 +86,7 @@ class AlbumList extends Component {
                             : null,
                     status: status,
                     release_date: album.release_date,
-                    album_type: album.album_type
+                    album_type: album.album_type,
                 };
             });
         this.setState({
@@ -86,9 +95,16 @@ class AlbumList extends Component {
     };
 
     onSaveHandler = (album_id, status) => {
-        let saved_album = this.props.saved_album_ids.flat().find(
-            (album) => album.album_id === album_id
-        );
+        if (window.location.host.indexOf("localhost") < 0) {
+            this.setState({
+                display_blocked_modal: true,
+            });
+            return;
+        }
+
+        let saved_album = this.props.saved_album_ids
+            .flat()
+            .find((album) => album.album_id === album_id);
 
         let endpoint, onResponse, onError, options, prevState;
         // debugger;
@@ -236,14 +252,36 @@ class AlbumList extends Component {
             return (
                 <li
                     key={album.album_id}
-                    className={"column" + (this.props.layout_classname ? " ".concat(this.props.layout_classname) : "")}
+                    className={
+                        "column" +
+                        (this.props.layout_classname
+                            ? " ".concat(this.props.layout_classname)
+                            : "")
+                    }
                 >
                     <Album album={album} on_action={this.onSaveHandler} />
                 </li>
             );
         });
 
-        return <ul className="columns is-mobile is-multiline is-marginless">{albumList}</ul>;
+        const modal = this.state.display_blocked_modal ? (
+            <Modal
+                onclose={() => {
+                    this.setState({ display_blocked_modal: false });
+                }}
+            >
+                <div>
+                    <p>That action is currently locked</p>
+                </div>
+            </Modal>
+        ) : null;
+
+        return (
+            <ul className="columns is-mobile is-multiline is-marginless">
+                {modal}
+                {albumList}
+            </ul>
+        );
     }
 }
 

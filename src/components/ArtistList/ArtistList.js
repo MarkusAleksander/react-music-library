@@ -7,10 +7,8 @@ import Artist from "./../Artist/Artist";
 
 import axios from "./../../netlify_api.js";
 
-import {
-    SAVE_ARTIST,
-    DELETE_ARTIST
-} from "./../../api_endpoints";
+import { SAVE_ARTIST, DELETE_ARTIST } from "./../../api_endpoints";
+import Modal from "../UI/Modal/Modal";
 
 class ArtistList extends Component {
     constructor(props) {
@@ -19,6 +17,7 @@ class ArtistList extends Component {
         this.state = {
             max_display_results: 0,
             processed_artists: [],
+            display_blocked_modal: false,
         };
     }
 
@@ -41,9 +40,9 @@ class ArtistList extends Component {
     }
 
     processArtistData = () => {
-        let saved_id_list = this.props.saved_artist_ids.flat().map(
-            (artist) => artist.artist_id
-        );
+        let saved_id_list = this.props.saved_artist_ids
+            .flat()
+            .map((artist) => artist.artist_id);
         // debugger;
         let processed_artists = this.props.artists
             .slice(
@@ -61,7 +60,7 @@ class ArtistList extends Component {
                             ? artist.images[0].url
                             : null,
                     status: saved_id_list.includes(artist.id) ? "saved" : null,
-                    genres: artist.genres
+                    genres: artist.genres,
                 };
             });
 
@@ -71,6 +70,13 @@ class ArtistList extends Component {
     };
 
     onSaveHandler = (artist_id) => {
+        if (window.location.host.indexOf("localhost") < 0) {
+            this.setState({
+                display_blocked_modal: true,
+            });
+            return;
+        }
+
         let saved_artist = this.props.saved_artist_ids.flat().find((artist) => {
             return artist.artist_id === artist_id;
         });
@@ -213,7 +219,12 @@ class ArtistList extends Component {
             return (
                 <li
                     key={artist.artist_id}
-                    className={"column" + (this.props.layout_classname ? " ".concat(this.props.layout_classname) : "")}
+                    className={
+                        "column" +
+                        (this.props.layout_classname
+                            ? " ".concat(this.props.layout_classname)
+                            : "")
+                    }
                 >
                     <Artist
                         artist={artist}
@@ -224,7 +235,24 @@ class ArtistList extends Component {
             );
         });
 
-        return <ul className="columns is-mobile is-multiline is-marginless">{artistList}</ul>;
+        const modal = this.state.display_blocked_modal ? (
+            <Modal
+                onclose={() => {
+                    this.setState({ display_blocked_modal: false });
+                }}
+            >
+                <div>
+                    <p>That action is currently locked</p>
+                </div>
+            </Modal>
+        ) : null;
+
+        return (
+            <ul className="columns is-mobile is-multiline is-marginless">
+                {modal}
+                {artistList}
+            </ul>
+        );
     }
 }
 
