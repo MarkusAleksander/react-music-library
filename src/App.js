@@ -18,7 +18,11 @@ import SavedAlbums from "./containers/SavedAlbums/SavedAlbums";
 
 import axios from "./netlify_api.js";
 
-import { REQUEST_TOKEN, GET_ALBUMS, GET_ARTISTS } from "./api_endpoints";
+import {
+    REQUEST_SPOTIFY_TOKEN,
+    GET_ALBUMS,
+    GET_ARTISTS,
+} from "./api_endpoints";
 
 import "bulma/css/bulma.css";
 import "./App.css";
@@ -28,14 +32,14 @@ class App extends Component {
         super(props);
 
         this.state = {
-            has_spotify_request_token: false,
+            has_spotify_REQUEST_SPOTIFY_TOKEN: false,
         };
     }
 
     componentDidMount() {
         console.log("[App:componentDidMount]");
         axios
-            .get(REQUEST_TOKEN)
+            .get(REQUEST_SPOTIFY_TOKEN)
             .then((res) => {
                 axios.interceptors.request.use((config) => {
                     if (!config.params) {
@@ -48,7 +52,7 @@ class App extends Component {
                     "[App:componentDidMount: updating spotify request token]"
                 );
                 this.setState({
-                    has_spotify_request_token: true,
+                    has_spotify_REQUEST_SPOTIFY_TOKEN: true,
                 });
             })
             .catch((err) => {
@@ -100,7 +104,7 @@ class App extends Component {
     }
 
     render() {
-        const modal = !this.state.has_spotify_request_token ? (
+        const modal = !this.state.has_spotify_REQUEST_SPOTIFY_TOKEN ? (
             <Modal>
                 <div>
                     <p>Requesting access token from Spotify...</p>
