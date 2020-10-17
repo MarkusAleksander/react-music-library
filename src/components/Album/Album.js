@@ -7,7 +7,7 @@ import Auxillary from "../../hoc/Auxillary";
 const Album = (props) => {
     const actions = [
         {
-            onClick: () => props.on_action(props.album.album_id, "want"),
+            onClick: () => props.on_action(props.album, "want"),
             content: "Want",
             status: props.album.status,
             className:
@@ -15,7 +15,7 @@ const Album = (props) => {
                 (props.album.status === "loading" ? " is-loading" : ""),
         },
         {
-            onClick: () => props.on_action(props.album.album_id, "have"),
+            onClick: () => props.on_action(props.album, "have"),
             content: "Have",
             status: props.album.status,
             className:

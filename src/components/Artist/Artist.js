@@ -78,7 +78,7 @@ class Artist extends Component {
 
         const actions = [
             {
-                onClick: () => this.props.on_action(this.props.artist.artist_id),
+                onClick: () => this.props.on_action(this.props.artist),
                 content: this.props.artist.status === "saved" ? "Unsave" : "Save",
                 className:
                     this.props.artist.status === "saved"

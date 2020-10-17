@@ -94,13 +94,15 @@ class AlbumList extends Component {
         });
     };
 
-    onSaveHandler = (album_id, status) => {
+    onSaveHandler = (album_obj, status) => {
         if (window.location.host.indexOf("localhost") < 0) {
             this.setState({
                 display_blocked_modal: true,
             });
             return;
         }
+
+        let album_id = album_obj.album_id;
 
         let saved_album = this.props.saved_album_ids
             .flat()
@@ -205,9 +207,12 @@ class AlbumList extends Component {
             // * we're saving a new album
             endpoint = SAVE_ALBUM;
 
+            let album_title = album_obj.album_title;
+
             options = {
-                album_id: album_id,
-                status: status,
+                album_id,
+                album_title,
+                status,
             };
 
             let albums = [...this.state.processed_albums];
@@ -223,8 +228,9 @@ class AlbumList extends Component {
                 if (res.status === 200 && res.data.success_id) {
                     this.props.onStoreAlbum({
                         gfb_id: res.data.success_id,
-                        album_id: album_id,
-                        status: status,
+                        album_id,
+                        album_title,
+                        status,
                     });
                 }
             };

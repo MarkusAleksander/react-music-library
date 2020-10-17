@@ -69,13 +69,16 @@ class ArtistList extends Component {
         });
     };
 
-    onSaveHandler = (artist_id) => {
+    onSaveHandler = (artist_obj) => {
         if (window.location.host.indexOf("localhost") < 0) {
             this.setState({
                 display_blocked_modal: true,
             });
             return;
         }
+
+        // * get artist id
+        let artist_id = artist_obj.artist_id;
 
         let saved_artist = this.props.saved_artist_ids.flat().find((artist) => {
             return artist.artist_id === artist_id;
@@ -134,8 +137,11 @@ class ArtistList extends Component {
         else {
             endpoint = SAVE_ARTIST;
 
+            let artist_title = artist_obj.artist_title;
+
             options = {
                 artist_id,
+                artist_title
             };
 
             let artists = [...this.state.processed_artists];
@@ -154,6 +160,7 @@ class ArtistList extends Component {
                     this.props.onStoreArtist({
                         gfb_id: res.data.success_id,
                         artist_id: artist_id,
+                        artist_title: artist_title,
                         status: "saved",
                     });
                 }
