@@ -20,8 +20,8 @@ import axios from "./netlify_api.js";
 
 import {
     REQUEST_SPOTIFY_TOKEN,
-    GET_ALBUMS,
-    GET_ARTISTS,
+    GET_SAVED_ALBUMS,
+    GET_SAVED_ARTISTS,
 } from "./api_endpoints";
 
 import "bulma/css/bulma.css";
@@ -60,30 +60,29 @@ class App extends Component {
             });
 
         // * send request for saved album ids
-        axios
-            .get(GET_ALBUMS)
-            .then((res) => {
-                console.log(res.data);
-                if (res.data) {
-                    let keys = Object.keys(res.data);
-                    let new_array = [];
-                    for (let i = 0; i < keys.length; i++) {
-                        new_array.push({
-                            album_id: res.data[keys[i]].album_id,
-                            status: res.data[keys[i]].status,
-                            gfb_id: keys[i],
-                        });
-                    }
-                    this.props.onStoreAlbums(new_array);
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        // axios
+        //     .get(GET_SAVED_ALBUMS)
+        //     .then((res) => {
+        //         if (res.data) {
+        //             let keys = Object.keys(res.data);
+        //             let new_array = [];
+        //             for (let i = 0; i < keys.length; i++) {
+        //                 new_array.push({
+        //                     album_id: res.data[keys[i]].album_id,
+        //                     status: res.data[keys[i]].status,
+        //                     gfb_id: keys[i],
+        //                 });
+        //             }
+        //             this.props.onStoreAlbums(new_array);
+        //         }
+        //     })
+        //     .catch((err) => {
+        //         console.log(err);
+        //     });
 
         // * send request for saved artist ids
         axios
-            .get(GET_ARTISTS)
+            .get(GET_SAVED_ARTISTS)
             .then((res) => {
                 if (res.data) {
                     let keys = Object.keys(res.data);

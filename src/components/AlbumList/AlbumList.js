@@ -63,10 +63,10 @@ class AlbumList extends Component {
             .map((album) => {
                 let status = saved_album_ids.includes(album.id)
                     ? this.props.saved_album_ids
-                          .flat()
-                          .find(
-                              (saved_album) => saved_album.album_id === album.id
-                          ).status
+                        .flat()
+                        .find(
+                            (saved_album) => saved_album.album_id === album.id
+                        ).status
                     : null;
 
                 return {
@@ -180,6 +180,7 @@ class AlbumList extends Component {
             // * send resquest
             onResponse = (res) => {
                 if (res.status === 200 && res.data.success_id) {
+                    // debugger;
                     saved_album.status = res.data.status;
                     this.props.onUpdateAlbum({
                         gfb_id: res.data.success_id,

@@ -11,7 +11,7 @@ import ArtistList from "./../../components/ArtistList/ArtistList";
 
 import axios from "./../../netlify_api";
 
-import { GET_ARTIST } from "./../../api_endpoints";
+import { GET_ARTIST, GET_ARTISTS } from "./../../api_endpoints";
 
 class SavedArtists extends Component {
 
@@ -106,6 +106,8 @@ class SavedArtists extends Component {
 
     requestArtistData = () => {
         let requested_ids = [];
+        let endpoint = GET_ARTISTS;
+
         if (
             this.props.saved_artist_ids_total !== this.props.saved_artist_data_total
             && this.props.saved_artist_ids.length === this.props.saved_artist_data.length
@@ -129,7 +131,7 @@ class SavedArtists extends Component {
 
         // * get artist data
         axios
-            .get(GET_ARTIST, {
+            .get(endpoint, {
                 params: {
                     artist_ids: requested_ids
                 },

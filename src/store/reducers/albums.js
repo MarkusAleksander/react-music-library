@@ -63,7 +63,7 @@ const reducer = (state = initialState, action) => {
             }
         case actionTypes.UPDATE_ALBUM:
             {
-                const saved_albums = state.saved_album_ids.flat();
+                const saved_albums = [...state.saved_album_ids.flat()];
 
                 let idx = saved_albums.findIndex((album) => {
                     return album.album_id === action.album_to_update.album_id;
@@ -71,7 +71,7 @@ const reducer = (state = initialState, action) => {
                 saved_albums[idx] = action.album_to_update.album;
                 return {
                     ...state,
-                    albums: saved_albums,
+                    saved_album_ids: chunkArray(saved_albums),
                 };
             }
         case actionTypes.REMOVE_ALBUM:

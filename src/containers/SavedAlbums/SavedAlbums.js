@@ -11,7 +11,7 @@ import AlbumList from "./../../components/AlbumList/AlbumList";
 
 import axios from "./../../netlify_api";
 
-import { GET_ALBUM_DATA } from "./../../api_endpoints";
+import { GET_ALBUM, GET_ALBUMS } from "./../../api_endpoints";
 
 class SavedAlbums extends Component {
 
@@ -119,6 +119,8 @@ class SavedAlbums extends Component {
     requestAlbumData = () => {
         // * request the data from the api...
         let requested_ids = [];
+        let endpoint = GET_ALBUMS;
+
         if (
             // * album id totals and album data totals don't match
             this.props.saved_album_ids_total !== this.props.saved_album_data_total
@@ -148,7 +150,7 @@ class SavedAlbums extends Component {
         }
 
         axios
-            .get(GET_ALBUM_DATA, {
+            .get(endpoint, {
                 params: {
                     album_ids: requested_ids,
                 },
