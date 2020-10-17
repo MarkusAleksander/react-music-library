@@ -11,7 +11,7 @@ import ArtistList from "./../../components/ArtistList/ArtistList";
 
 import axios from "./../../netlify_api";
 
-import { GET_ARTIST, GET_ARTISTS } from "./../../api_endpoints";
+import { /*GET_ARTIST,*/ GET_ARTISTS } from "./../../api_endpoints";
 
 class SavedArtists extends Component {
 

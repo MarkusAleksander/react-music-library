@@ -11,7 +11,7 @@ import AlbumList from "./../../components/AlbumList/AlbumList";
 
 import axios from "./../../netlify_api";
 
-import { GET_ALBUM, GET_ALBUMS } from "./../../api_endpoints";
+import { /*GET_ALBUM,*/ GET_ALBUMS } from "./../../api_endpoints";
 
 class SavedAlbums extends Component {
 
