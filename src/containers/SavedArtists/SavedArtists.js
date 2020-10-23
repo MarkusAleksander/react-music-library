@@ -2,10 +2,11 @@ import React, { Component } from "react";
 
 import { connect } from "react-redux";
 
+import * as actionCreators from "../../store/actions/index";
+
 import Level from "./../../components/UI/Level/Level";
 import Button from "./../../components/UI/Button/Button";
 import Input from "./../../components/UI/Input/Input";
-import * as actionTypes from "./../../store/actions";
 
 import ArtistList from "./../../components/ArtistList/ArtistList";
 
@@ -259,10 +260,9 @@ class SavedArtists extends Component {
 const mapDispatchToProps = (dispatch) => {
     return {
         onStoreArtistData: (saved_artist_data) =>
-            dispatch({
-                type: actionTypes.STORE_SAVED_ARTIST_DATA,
-                saved_artist_data,
-            }),
+            dispatch(
+                actionCreators.store_saved_artist_data(saved_artist_data)
+            ),
     };
 };
 

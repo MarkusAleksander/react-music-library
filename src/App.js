@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 import { connect } from "react-redux";
-import * as actionTypes from "./store/actions";
+import * as actionCreators from "./store/actions/index";
 
 import { Route, Switch } from "react-router-dom";
 
@@ -20,8 +20,6 @@ import axios from "./netlify_api.js";
 
 import {
     REQUEST_SPOTIFY_TOKEN,
-    GET_SAVED_ALBUMS,
-    GET_SAVED_ARTISTS,
 } from "./api_endpoints";
 
 import "bulma/css/bulma.css";
@@ -60,46 +58,10 @@ class App extends Component {
             });
 
         // * send request for saved album ids
-        axios
-            .get(GET_SAVED_ALBUMS)
-            .then((res) => {
-                if (res.data) {
-                    let keys = Object.keys(res.data);
-                    let new_array = [];
-                    for (let i = 0; i < keys.length; i++) {
-                        new_array.push({
-                            album_id: res.data[keys[i]].album_id,
-                            status: res.data[keys[i]].status,
-                            gfb_id: keys[i],
-                        });
-                    }
-                    this.props.onStoreAlbums(new_array);
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-
-        // * send request for saved artist ids
-        axios
-            .get(GET_SAVED_ARTISTS)
-            .then((res) => {
-                if (res.data) {
-                    let keys = Object.keys(res.data);
-                    let new_array = [];
-                    for (let i = 0; i < keys.length; i++) {
-                        new_array.push({
-                            artist_id: res.data[keys[i]].artist_id,
-                            gfb_id: keys[i],
-                            status: "saved",
-                        });
-                    }
-                    this.props.onStoreArtistIds(new_array);
-                }
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        // * request stored album ids
+        this.props.requestStoredAlbumIDs();
+        // * request stored artist ids
+        this.props.requestStoredArtistIDs();
     }
 
     render() {
@@ -130,19 +92,26 @@ class App extends Component {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onStoreAlbums: (saved_album_ids) => {
-            console.log("[onStoreAlbums]");
-            dispatch({
-                type: actionTypes.STORE_SAVED_ALBUM_IDS,
-                saved_album_ids,
-            });
+        requestStoredAlbumIDs: () => {
+            dispatch(
+                actionCreators.request_saved_album_ids()
+            )
         },
-        onStoreArtistIds: (saved_artist_ids) => {
-            dispatch({
-                type: actionTypes.STORE_SAVED_ARTIST_IDS,
-                saved_artist_ids,
-            });
+        requestStoredArtistIDs: () => {
+            dispatch(
+                actionCreators.request_saved_artist_ids()
+            )
         },
+        // onStoreAlbums: (saved_album_ids) => {
+        //     dispatch(
+        //         actionCreators.store_saved_album_ids(saved_album_ids)
+        //     );
+        // },
+        // onStoreArtistIds: (saved_artist_ids) => {
+        //     dispatch(
+        //         actionCreators.store_saved_artist_ids(saved_artist_ids)
+        //     );
+        // },
     };
 };
 

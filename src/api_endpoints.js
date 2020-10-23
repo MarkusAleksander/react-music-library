@@ -1,21 +1,3 @@
-// export const REQUEST_SPOTIFY_TOKEN = "/request-token";
-// export const GET_SAVED_ALBUMS = "/get-saved-albums";
-// const GET_ALBUM = "";
-// export const SAVE_ALBUM = "/save-album";
-// export const UPDATE_ALBUM = "/update-album";
-// export const DELETE_ALBUM = "/delete-album";
-// export const GET_SAVED_ARTISTS = "/get-saved-artists";
-
-// export const GET_ARTIST = "/get-artist";
-// export const GET_ARTIST_DATA = "/get-artist-data";
-// export const GET_ALBUM = "/get-album";
-// const GET_ARTIST = "";
-// export const SAVE_ARTIST = "/save-artist";
-// export const DELETE_ARTIST = "/delete-artist";
-// const UPDATE_ARTIST = "/update-album";
-
-// * updates
-
 // * ---- Spotify API
 // * Request Token from Spotify
 export const REQUEST_SPOTIFY_TOKEN = "/request-spotify-token";

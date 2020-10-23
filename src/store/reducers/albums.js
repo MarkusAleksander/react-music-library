@@ -1,4 +1,6 @@
-import * as actionTypes from "./../actions";
+import * as actionTypes from "./../actions/actionTypes";
+
+import { updateObject, chunkArray } from "./../utility";
 
 const initialState = {
     // * list of ids and gfb_ids
@@ -13,96 +15,108 @@ const initialState = {
     queried_album_data: [],
 };
 
-const request_limit = 10;
+const storeSavedAlbumIDs = (state, action) => {
+    return updateObject(
+        state,
+        {
+            saved_album_ids: chunkArray(action.saved_album_ids),
+            saved_album_ids_total: action.saved_album_ids.length
+        }
+    );
+}
 
-const chunkArray = (myArray, chunk_size) => {
-    var results = [];
-    var arr = [...myArray];
+const storeSavedAlbumData = (state, action) => {
+    let new_array = state.saved_album_data.flat().concat(action.saved_album_data)
 
-    chunk_size = chunk_size ? chunk_size : request_limit;
+    return updateObject(
+        state,
+        {
+            saved_album_data: chunkArray(new_array),
+            saved_album_data_total: new_array.length
+        }
+    );
+}
 
-    while (arr.length) {
-        results.push(arr.splice(0, chunk_size));
-    }
+const addAlbum = (state, action) => {
+    let new_array = state.saved_album_ids.flat().concat(
+        action.album_to_add
+    );
 
-    return results;
+    return updateObject(
+        state,
+        {
+            saved_album_ids: chunkArray(new_array),
+            saved_album_ids_total: new_array.length
+        }
+    );
+}
+
+const updateAlbum = (state, action) => {
+    const saved_albums = [...state.saved_album_ids.flat()];
+
+    let idx = saved_albums.findIndex((album) => {
+        return album.album_id === action.album_to_update.album_id;
+    });
+    saved_albums[idx] = action.album_to_update.album;
+
+    return updateObject(
+        state,
+        {
+            saved_album_ids: chunkArray(saved_albums),
+        }
+    );
+}
+
+const removeAlbum = (state, action) => {
+    const update_saved_ids = state.saved_album_ids.flat().filter((album) => {
+        return (
+            album.album_id !== action.album_to_remove.album_id &&
+            album.gfb_id !== action.album_to_remove.gfb_id
+        );
+    });
+    const update_saved_data = state.saved_album_data.flat().filter((album) => {
+        return (
+            album.id !== action.album_to_remove.album_id
+        );
+    });
+
+    return updateObject(
+        state,
+        {
+            saved_album_ids: chunkArray(update_saved_ids),
+            saved_album_ids_total: update_saved_ids.length,
+            saved_album_data: chunkArray(update_saved_data),
+            saved_album_data_total: update_saved_data.length
+        }
+    );
+}
+
+const storeAlbumQueryResults = (state, action) => {
+    return updateObject(
+        state,
+        {
+            queried_album_data: action.queried_album_data,
+        }
+    );
 }
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         // * store saved ids from firebase
         case actionTypes.STORE_SAVED_ALBUM_IDS:
-            {
-                return {
-                    ...state,
-                    saved_album_ids: chunkArray(action.saved_album_ids),
-                    saved_album_ids_total: action.saved_album_ids.length
-                };
-            }
+            return storeSavedAlbumIDs(state, action);
         // * store saved album data
         case actionTypes.STORE_SAVED_ALBUM_DATA:
-            {
-                let new_array = state.saved_album_data.flat().concat(action.saved_album_data)
-                return {
-                    ...state,
-                    saved_album_data: chunkArray(new_array),
-                    saved_album_data_total: new_array.length
-                };
-            }
+            return storeSavedAlbumData(state, action);
         // * add album to the store
         case actionTypes.ADD_ALBUM:
-            {
-                let new_array = state.saved_album_ids.flat().concat(
-                    action.album_to_add
-                );
-                return {
-                    ...state,
-                    saved_album_ids: chunkArray(new_array),
-                    saved_album_ids_total: new_array.length
-                };
-            }
+            return addAlbum(state, action);
         case actionTypes.UPDATE_ALBUM:
-            {
-                const saved_albums = [...state.saved_album_ids.flat()];
-
-                let idx = saved_albums.findIndex((album) => {
-                    return album.album_id === action.album_to_update.album_id;
-                });
-                saved_albums[idx] = action.album_to_update.album;
-                return {
-                    ...state,
-                    saved_album_ids: chunkArray(saved_albums),
-                };
-            }
+            return updateAlbum(state, action);
         case actionTypes.REMOVE_ALBUM:
-            {
-                const update_saved_ids = state.saved_album_ids.flat().filter((album) => {
-                    return (
-                        album.album_id !== action.album_to_remove.album_id &&
-                        album.gfb_id !== action.album_to_remove.gfb_id
-                    );
-                });
-                const update_saved_data = state.saved_album_data.flat().filter((album) => {
-                    return (
-                        album.id !== action.album_to_remove.album_id
-                    );
-                });
-
-                return {
-                    ...state,
-                    saved_album_ids: chunkArray(update_saved_ids),
-                    saved_album_ids_total: update_saved_ids.length,
-                    saved_album_data: chunkArray(update_saved_data),
-                    saved_album_data_total: update_saved_data.length
-                };
-            }
+            return removeAlbum(state, action);
         case actionTypes.STORE_ALBUM_QUERY_RESULTS:
-            {
-                return {
-                    ...state,
-                    queried_album_data: action.queried_album_data,
-                };
-            }
+            return storeAlbumQueryResults(state, action);
         default:
             return state;
     }

@@ -2,10 +2,11 @@ import React, { Component } from "react";
 
 import { connect } from "react-redux";
 
+import * as actionCreators from "../../store/actions/index";
+
 import Level from "./../../components/UI/Level/Level";
 import Button from "./../../components/UI/Button/Button";
 import Input from "./../../components/UI/Input/Input";
-import * as actionTypes from "./../../store/actions";
 
 import AlbumList from "./../../components/AlbumList/AlbumList";
 
@@ -324,10 +325,9 @@ class SavedAlbums extends Component {
 const mapDispatchToProps = (dispatch) => {
     return {
         onStoreAlbumData: (saved_album_data) =>
-            dispatch({
-                type: actionTypes.STORE_SAVED_ALBUM_DATA,
-                saved_album_data,
-            }),
+            dispatch(
+                actionCreators.store_saved_album_data(saved_album_data)
+            ),
     };
 };
 

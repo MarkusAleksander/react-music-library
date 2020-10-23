@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 
 import { connect } from "react-redux";
-import * as actionTypes from "./../../store/actions";
+
+import * as actionCreators from "./../../store/actions/index";
 
 import Artist from "./../Artist/Artist";
 
@@ -266,15 +267,13 @@ class ArtistList extends Component {
 const mapDispatchToProps = (dispatch) => {
     return {
         onStoreArtist: (artist_to_add) =>
-            dispatch({
-                type: actionTypes.ADD_ARTIST,
-                artist_to_add,
-            }),
+            dispatch(
+                actionCreators.add_artist(artist_to_add)
+            ),
         onRemoveArtist: (artist_to_remove) =>
-            dispatch({
-                type: actionTypes.REMOVE_ARTIST,
-                artist_to_remove,
-            }),
+            dispatch(
+                actionCreators.remove_artist(artist_to_remove)
+            ),
     };
 };
 

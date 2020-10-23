@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 
 import { connect } from "react-redux";
-// import * as actionTypes from "./../../store/actions.js";
+
+import * as actionCreators from "../../store/actions/index";
 
 import Auxillary from "./../../hoc/Auxillary";
-import * as actionTypes from "./../../store/actions";
 
 import SearchForm from "../../components/SearchForm/SearchForm";
 import Load from "./../../components/Load/Load";
@@ -79,16 +79,12 @@ class Search extends Component {
 const mapDispatchToProps = (dispatch) => {
     return {
         onStoreArtistQueryResults: (queried_artist_data) => {
-            dispatch({
-                type: actionTypes.STORE_ARTIST_QUERY_RESULTS,
-                queried_artist_data: queried_artist_data,
-            });
+            dispatch(
+                actionCreators.store_artist_query_results(queried_artist_data));
         },
         onStoreAlbumQueryResults: (queried_album_data) => {
-            dispatch({
-                type: actionTypes.STORE_ALBUM_QUERY_RESULTS,
-                queried_album_data: queried_album_data,
-            });
+            dispatch(
+                actionCreators.store_album_query_results(queried_album_data));
         },
     };
 };

@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 
 import { connect } from "react-redux";
-import * as actionTypes from "./../../store/actions";
+
+import * as actionCreators from "./../../store/actions/index";
 
 import Album from "./../Album/Album";
 
@@ -295,20 +296,17 @@ class AlbumList extends Component {
 const mapDispatchToProps = (dispatch) => {
     return {
         onStoreAlbum: (album_to_add) =>
-            dispatch({
-                type: actionTypes.ADD_ALBUM,
-                album_to_add,
-            }),
+            dispatch(
+                actionCreators.add_album(album_to_add)
+            ),
         onRemoveAlbum: (album_to_remove) =>
-            dispatch({
-                type: actionTypes.REMOVE_ALBUM,
-                album_to_remove,
-            }),
+            dispatch(
+                actionCreators.remove_album(album_to_remove)
+            ),
         onUpdateAlbum: (album_to_update) =>
-            dispatch({
-                type: actionTypes.UPDATE_ALBUM,
-                album_to_update,
-            }),
+            dispatch(
+                actionCreators.update_album(album_to_update)
+            ),
     };
 };
 
