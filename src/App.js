@@ -59,7 +59,7 @@ class App extends Component {
 
         // * send request for saved album ids
         // * request stored album ids
-        // this.props.requestStoredAlbumIDs();
+        this.props.requestStoredAlbumIDs();
         // * request stored artist ids
         this.props.requestStoredArtistIDs();
     }
