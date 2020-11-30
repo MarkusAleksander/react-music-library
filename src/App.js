@@ -59,7 +59,7 @@ class App extends Component {
 
         // * send request for saved album ids
         // * request stored album ids
-        this.props.requestStoredAlbumIDs();
+        // this.props.requestStoredAlbumIDs();
         // * request stored artist ids
         this.props.requestStoredArtistIDs();
     }
@@ -102,16 +102,6 @@ const mapDispatchToProps = (dispatch) => {
                 actionCreators.request_saved_artist_ids()
             )
         },
-        // onStoreAlbums: (saved_album_ids) => {
-        //     dispatch(
-        //         actionCreators.store_saved_album_ids(saved_album_ids)
-        //     );
-        // },
-        // onStoreArtistIds: (saved_artist_ids) => {
-        //     dispatch(
-        //         actionCreators.store_saved_artist_ids(saved_artist_ids)
-        //     );
-        // },
     };
 };
 

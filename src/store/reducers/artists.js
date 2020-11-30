@@ -1,16 +1,23 @@
 import * as actionTypes from "./../actions/actionTypes";
+import * as orderTyoes from "./../actions/orderTypes";
 
 import { updateObject, chunkArray } from "./../utility";
 
 const initialState = {
     // * List of ids and gfb_ids
     saved_artist_ids: [],
+    // * total saved artist ids
     saved_artist_ids_total: 0,
     // * list of actual artist data
     saved_artist_data: [],
+    // * total saved artist data
     saved_artist_data_total: 0,
     // * current queried artist data
     queried_artist_data: [],
+    // * next requestable set
+    next_requestable_set: 0,
+    // * ordering
+    ordering: orderTyoes.ORDER_NONE
 };
 
 const storeSavedArtistIDs = (state, action) => {
@@ -18,18 +25,24 @@ const storeSavedArtistIDs = (state, action) => {
         state,
         {
             saved_artist_ids: chunkArray(action.saved_artist_ids),
-            saved_artist_ids_total: action.saved_artist_ids.length
+            saved_artist_ids_total: action.saved_artist_ids.length,
+            saved_artist_data: [],
+            saved_artist_data_total: 0,
+            next_requestable_set: 0
         }
     )
 }
 
 const storeSavedArtistData = (state, action) => {
     let new_array = state.saved_artist_data.flat().concat(action.saved_artist_data);
+    let next_requestable_set = state.next_requestable_set >= state.saved_artist_ids.length ? state.next_requestable_set : state.next_requestable_set + 1;
+
     return updateObject(
         state,
         {
             saved_artist_data: chunkArray(new_array),
-            saved_artist_data_total: new_array.length
+            saved_artist_data_total: new_array.length,
+            next_requestable_set
         }
     )
 }
@@ -81,6 +94,15 @@ const storeArtistQueryResults = (state, action) => {
     )
 }
 
+const updateArtistOrdering = (state, action) => {
+    return updateObject(
+        state,
+        {
+            ordering: action.ordering
+        }
+    )
+}
+
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         // * store saved ids from firebase
@@ -98,6 +120,8 @@ const reducer = (state = initialState, action) => {
         // * store search results
         case actionTypes.STORE_ARTIST_QUERY_RESULTS:
             return storeArtistQueryResults(state, action);
+        case actionTypes.UPDATE_ARTIST_ORDERING:
+            return updateArtistOrdering(state, action);
         default:
             return state;
     }

@@ -25,3 +25,5 @@ yarn-error.log*
 uploadapi.local.js
 
 server_notes
+
+debug.log

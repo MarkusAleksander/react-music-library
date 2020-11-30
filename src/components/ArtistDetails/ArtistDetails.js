@@ -7,6 +7,8 @@ import GenreList from "./../GenreList/GenreList";
 
 import Auxillary from "./../../hoc/Auxillary";
 
+const layout_classlist = "is-full-mobile is-half-tablet is-one-third-desktop";
+
 const ArtistDetails = (props) => {
     return (
         <Auxillary>
@@ -35,14 +37,14 @@ const ArtistDetails = (props) => {
             {props.artist_details.albums ?
                 <div className="section">
                     <h1 className="subtitle">Albums</h1>
-                    <AlbumList layout_classname={"is-half-mobile is-one-third"} albums={props.artist_details.albums.items} />
+                    <AlbumList layout_classname={layout_classlist} albums={props.artist_details.albums.items} />
                 </div>
                 : null}
 
             {props.artist_details.related_artists ?
                 <div className="section">
                     <h1 className="subtitle">Related Artists</h1>
-                    <ArtistList layout_classname={"is-half-mobile is-one-third"} artists={props.artist_details.related_artists.artists} />
+                    <ArtistList layout_classname={layout_classlist} artists={props.artist_details.related_artists.artists} />
                 </div>
                 : null}
 

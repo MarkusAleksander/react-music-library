@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import * as actionCreators from "../../store/actions/index";
+import * as orderTypes from "../../store/actions/orderTypes";
 
 import Level from "./../../components/UI/Level/Level";
 import Button from "./../../components/UI/Button/Button";
@@ -10,22 +11,16 @@ import Input from "./../../components/UI/Input/Input";
 
 import AlbumList from "./../../components/AlbumList/AlbumList";
 
-import axios from "./../../netlify_api";
-
-import { /*GET_ALBUM,*/ GET_ALBUMS } from "./../../api_endpoints";
-
 class SavedAlbums extends Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            ordering: "",
             filter_text: "",
             filter_status: "",
-            // TODO - this is going to depend on number of current items
-            next_page: 0,
-            is_loading: false,
+            is_requesting: false,
+            is_reordering: false,
             observer_is_active: false
         };
 
@@ -37,148 +32,145 @@ class SavedAlbums extends Component {
     componentDidMount() {
         // * component is mounted - prepare the lazy loader observer for scroll api requests
         this.setUpLazyLoaderObserver();
-        // * is there already album data in the store?
-        if (this.props.saved_album_data_total) {
-            // * if so, what "page" are we up to?
-            this.setState({
-                next_page: this.props.saved_album_data.length
-            });
-        } else {
-            // * if not...
-            // this.requestAlbumData();
+        // * do we have some album ids yet to request data on?
+        if (this.props.saved_album_ids_total) {
+            this.handleObserver();
         }
-
-        this.handleObserver();
     }
 
     componentDidUpdate(prevProps, prevState) {
-        // * do we need to request data?
-
-        // * if we've just finished loading, don't do anything
-        if (prevState.is_loading && !this.state.is_loading) {
-            return;
+        // * If we have album ids to work with...
+        if (this.props.saved_album_ids_total) {
+            // * handle the observer status
+            this.handleObserver();
         }
-        this.handleShouldRequestAlbumData();
-        this.handleObserver();
+
+        // * If we have album ids to work with
+        // * And no album data yet
+        // * and we're not waiting on some data to load.. 
+        // * to handle when no data has yet been requested
+        if (
+            this.props.saved_album_ids_total
+            && !this.props.saved_album_data_total
+            && !this.state.is_requesting
+        ) {
+            // * check if we need to request any data
+            this.handleShouldRequestAlbumData();
+        }
     }
 
+    // * Handle the observer
     handleObserver = () => {
-        if (this.props.saved_album_ids_total && this.props.saved_album_ids_total === this.props.saved_album_data_total) {
+        if (
+            this.state.observer_is_active
+            && this.props.saved_album_ids_total === this.props.saved_album_data_total
+        ) {
+            // * if the observer is active
+            // * and the total of stored ids equals the total of saved data
+            // * then we can disconnect
             this.disconnectLazyLoaderObserver();
-        } else {
+        } else if (
+            !this.state.observer_is_active
+            && this.props.saved_album_ids_total > this.props.saved_album_data_total
+        ) {
+            // * else if the observer is inactive
+            // * and the total of stored ids is greater than the total of saved data
+            // * then we need to connect the lazy observer
             this.setUpLazyLoaderObserver();
         }
     }
 
-    onObserve = (entries) => {
-        entries.forEach((entry) => {
-            const { isIntersecting } = entry;
-
-            if (isIntersecting) {
-                console.log("loading more albums...");
-                this.handleShouldRequestAlbumData();
-            }
-        });
-    }
-
     setUpLazyLoaderObserver = () => {
+        // * sanity check in case this is called from elsewhere other than the handler
         if (this.state.observer_is_active) return;
 
-        console.log("[SavedAlbums:setUpLazyLoaderObserver]");
-
         this.observer.observe(this.lazy_loader_ref.current);
+
         this.setState({
             observer_is_active: true
         });
     }
 
+    // * setup the lazy observer
+    onObserve = (entries) => {
+        // * don't send a request if we're already waiting
+        if (this.state.is_requesting) return;
+
+        entries.forEach((entry) => {
+            const { isIntersecting } = entry;
+            if (isIntersecting) {
+                // * Request some more Album data
+                this.handleShouldRequestAlbumData();
+            }
+        });
+    }
+
+    // * disconnect the lazy loader when we're done with it
     disconnectLazyLoaderObserver = () => {
         if (!this.state.observer_is_active) return;
 
-        console.log("[SavedAlbums:disconnectLazyLoaderObserver]");
-
         this.observer.disconnect();
+
         this.setState({
             observer_is_active: false
         });
     }
 
+    // * Do we need to request any Album data?
     handleShouldRequestAlbumData = () => {
-        // * only get album data when
         if (
-            // * we have albums ids...
+            // * check we have ids to request
+            // * and the total amount of data already requested is not equal to the number of ids wanted
+            // * and we're not waiting on some other data to arrive
             this.props.saved_album_ids_total
-            // * we haven't yet got all the album data
             && this.props.saved_album_ids_total !== this.props.saved_album_data_total
-            // * and we're not currently loading data already
-            && !this.state.is_loading
+            && !this.state.is_requesting
         ) {
             this.requestAlbumData();
         }
     }
 
+    // * Send request for some data
     requestAlbumData = () => {
-        // * request the data from the api...
-        let requested_ids = [];
-        let endpoint = GET_ALBUMS;
+        // * sanity check - don't need to request more when we're already waiting
+        if (this.state.is_requesting) return;
 
-        if (
-            // * album id totals and album data totals don't match
-            this.props.saved_album_ids_total !== this.props.saved_album_data_total
-            // * and the number of album id chunks and album data chunks do match
-            // TODO - required?
-            && this.props.saved_album_ids.length === this.props.saved_album_data.length
-        ) {
-            // * find all new ids (have to account for items shifting around by removal etc)
-            let ids = this.props.saved_album_ids.flat().map(id => id.album_id);
-            let datas = this.props.saved_album_data.flat().map(data => data.id);
+        // * get album data
+        this.props.requestSavedAlbumData(this.onDataReceived);
 
-            requested_ids = ids.filter((id) => {
-                // * return id where id is not in the data_chunk
-                return !datas.includes(id);
-            });
-
-        } else {
-            // * otherwise, we're just getting the next chunk
-            requested_ids = this.props.saved_album_ids[this.state.next_page].map(
-                (album) => album.album_id
-            )
-        }
-
-        // max 20 at any time
-        if (requested_ids.length > 20) {
-            requested_ids = requested_ids.slice(0, 19);
-        }
-
-        axios
-            .get(endpoint, {
-                params: {
-                    album_ids: requested_ids,
-                },
-            })
-            .then((res) => {
-                // * store the returned results
-                this.props.onStoreAlbumData(res.data.albums);
-                // * signify we're no longer loading, and we're ready to get the next page
-                this.setState({
-                    is_loading: false,
-                    next_page: this.state.next_page + 1
-                });
-            })
-            .catch((err) => console.log(err));
-
-        // * signify we're loading
+        // * Set that we're waiting on some data to come in
         this.setState({
-            is_loading: true,
+            is_requesting: true
         });
     };
 
+    // * Handle when album data is received
+    onDataReceived = () => {
+        this.setState({
+            is_requesting: false
+        });
+    }
+
+    // * Handle selecting order change
     onChangeOrdering = (ordering) => {
-        if (ordering === "AZ" || ordering === "ZA") {
-            if (ordering === this.state.ordering) ordering = "";
-            this.setState({ ordering });
-        }
+        // * if already waiting on reordered data, return
+        if (this.state.is_reordering) return;
+
+        // * dispatch to store to request reordered data
+        this.props.updateAlbumOrdering(ordering, this.onChangeOrderingCompleted);
+
+        // * flag that we're waiting on reordered data
+        this.setState({
+            is_reordering: true
+        });
     };
+
+    // * callback for when reordered data has completed
+    onChangeOrderingCompleted = () => {
+        this.setState({
+            is_reordering: false
+        })
+    }
 
     onChangeFilterState = (filter_status) => {
         if (filter_status === "have" || filter_status === "want") {
@@ -186,32 +178,6 @@ class SavedAlbums extends Component {
             this.setState({ filter_status })
         }
     }
-
-    sortByAZ = (a, b) => {
-        let name_a = a.name.toLowerCase();
-        let name_b = b.name.toLowerCase();
-
-        if (name_a < name_b) {
-            return -1;
-        }
-        if (name_a > name_b) {
-            return 1;
-        }
-        return 0;
-    };
-
-    sortByZA = (a, b) => {
-        let name_a = a.name.toLowerCase();
-        let name_b = b.name.toLowerCase();
-
-        if (name_a < name_b) {
-            return 1;
-        }
-        if (name_a > name_b) {
-            return -1;
-        }
-        return 0;
-    };
 
     updateFilterText = (e) => {
         let filter_text = e.target.value;
@@ -239,13 +205,6 @@ class SavedAlbums extends Component {
             });
         }
 
-        if (this.state.ordering === "AZ") {
-            filtered_albums.sort(this.sortByAZ);
-        }
-        if (this.state.ordering === "ZA") {
-            filtered_albums.sort(this.sortByZA);
-        }
-
         if (this.state.filter_status !== "") {
             let filtered_ids = this.props.saved_album_ids.flat().filter(album => album.status === this.state.filter_status);
             filtered_albums = filtered_albums.filter((album) => {
@@ -262,21 +221,29 @@ class SavedAlbums extends Component {
                         <div className="buttons">
                             <Button
                                 className={
-                                    this.state.ordering === "AZ"
+                                    (this.props.ordering === orderTypes.ORDER_AZ
                                         ? "is-primary"
-                                        : "is-info"
+                                        : "is-info").concat(
+                                            this.state.is_reordering ? " is-loading" : ""
+                                        )
                                 }
                                 content="A-Z"
-                                onClick={() => this.onChangeOrdering("AZ")}
+                                onClick={
+                                    this.props.ordering !== orderTypes.ORDER_AZ ?
+                                        () => this.onChangeOrdering(orderTypes.ORDER_AZ) : null}
                             />
                             <Button
                                 className={
-                                    this.state.ordering === "ZA"
+                                    (this.props.ordering === orderTypes.ORDER_ZA
                                         ? "is-primary"
-                                        : "is-info"
+                                        : "is-info").concat(
+                                            this.state.is_reordering ? " is-loading" : ""
+                                        )
                                 }
                                 content="Z-A"
-                                onClick={() => this.onChangeOrdering("ZA")}
+                                onClick={
+                                    this.props.ordering !== orderTypes.ORDER_ZA ?
+                                        () => this.onChangeOrdering(orderTypes.ORDER_ZA) : null}
                             />
                             <Button
                                 className={
@@ -310,11 +277,11 @@ class SavedAlbums extends Component {
                     ]}
                 />
                 {filtered_albums.length ? (
-                    <AlbumList layout_classname={"is-half-mobile is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen"} albums={filtered_albums} />
+                    <AlbumList layout_classname={"is-full-mobile is-half-tablet is-one-third-desktop is-one-quarter-widescreen"} albums={filtered_albums} />
                 ) : null}
                 {/* {this.props.saved_album_ids_total !== this.props.saved_album_data_total ? ( */}
                 <div className="lazy-loader" ref={this.lazy_loader_ref}>
-                    {this.state.is_loading ? <div className="section"><p className="has-text-centered">Loading more...</p></div> : null}
+                    {this.state.is_requesting ? <div className="section"><p className="has-text-centered">Loading more...</p></div> : null}
                 </div>
                 {/* ) : null} */}
             </div>
@@ -324,10 +291,16 @@ class SavedAlbums extends Component {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        onStoreAlbumData: (saved_album_data) =>
+        requestSavedAlbumData: (onComplete) => {
             dispatch(
-                actionCreators.store_saved_album_data(saved_album_data)
-            ),
+                actionCreators.request_saved_album_data(onComplete)
+            )
+        },
+        updateAlbumOrdering: (ordering, onComplete) => {
+            dispatch(
+                actionCreators.handle_album_ordering_update(ordering, onComplete)
+            )
+        }
     };
 };
 
@@ -336,7 +309,8 @@ const mapStateToProps = (state) => {
         saved_album_ids: state.albums.saved_album_ids,
         saved_album_data: state.albums.saved_album_data,
         saved_album_ids_total: state.albums.saved_album_ids_total,
-        saved_album_data_total: state.albums.saved_album_data_total
+        saved_album_data_total: state.albums.saved_album_data_total,
+        ordering: state.albums.ordering
     };
 };
 

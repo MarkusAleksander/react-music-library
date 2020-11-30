@@ -1,4 +1,5 @@
 import * as actionTypes from "./../actions/actionTypes";
+import * as orderTypes from "./../actions/orderTypes";
 
 import { updateObject, chunkArray } from "./../utility";
 
@@ -7,12 +8,16 @@ const initialState = {
     saved_album_ids: [],
     // * total saved album ids
     saved_album_ids_total: 0,
-    // * list of actual artist data
+    // * list of actual album data
     saved_album_data: [],
     // * total saved album data
     saved_album_data_total: 0,
     // * current queried album data
     queried_album_data: [],
+    // * next requestable set
+    next_requestable_set: 0,
+    // * ordering
+    ordering: orderTypes.ORDER_NONE
 };
 
 const storeSavedAlbumIDs = (state, action) => {
@@ -20,19 +25,24 @@ const storeSavedAlbumIDs = (state, action) => {
         state,
         {
             saved_album_ids: chunkArray(action.saved_album_ids),
-            saved_album_ids_total: action.saved_album_ids.length
+            saved_album_ids_total: action.saved_album_ids.length,
+            saved_album_data: [],
+            saved_album_data_total: 0,
+            next_requestable_set: 0,
         }
     );
 }
 
 const storeSavedAlbumData = (state, action) => {
     let new_array = state.saved_album_data.flat().concat(action.saved_album_data)
+    let next_requestable_set = state.next_requestable_set >= state.saved_album_ids.length ? state.next_requestable_set : state.next_requestable_set + 1;
 
     return updateObject(
         state,
         {
             saved_album_data: chunkArray(new_array),
-            saved_album_data_total: new_array.length
+            saved_album_data_total: new_array.length,
+            next_requestable_set
         }
     );
 }
@@ -100,6 +110,15 @@ const storeAlbumQueryResults = (state, action) => {
     );
 }
 
+const updateAlbumOrdering = (state, action) => {
+    return updateObject(
+        state,
+        {
+            ordering: action.ordering
+        }
+    )
+}
+
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         // * store saved ids from firebase
@@ -117,6 +136,8 @@ const reducer = (state = initialState, action) => {
             return removeAlbum(state, action);
         case actionTypes.STORE_ALBUM_QUERY_RESULTS:
             return storeAlbumQueryResults(state, action);
+        case actionTypes.UPDATE_ALBUM_ORDERING:
+            return updateAlbumOrdering(state, action);
         default:
             return state;
     }
