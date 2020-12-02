@@ -23,20 +23,15 @@ class AlbumList extends Component {
     }
 
     componentDidMount() {
-        console.log("[AlbumList:componentDidMount]");
         this.processAlbumData();
     }
 
     componentDidUpdate(prevProps) {
-        console.log("[AlbumList:componentDidUpdate]");
         if (
             prevProps.albums !== this.props.albums ||
             prevProps.saved_album_ids !== this.props.saved_album_ids
         ) {
-            console.log("[AlbumList:componentDidUpdate:props don't match]");
             this.processAlbumData();
-        } else {
-            console.log("[AlbumList:componentDidUpdate:props match]");
         }
     }
 

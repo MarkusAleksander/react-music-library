@@ -5,7 +5,8 @@ const Search = (props) => (
     <Input
         className="search"
         type="text"
-        onchange={props.onchange}
+        onChange={props.onChange}
+        onSubmit={props.onSubmit}
         value={props.value}
         label={props.label}
     />

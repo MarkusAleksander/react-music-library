@@ -11,6 +11,8 @@ import Input from "./../../components/UI/Input/Input";
 
 import AlbumList from "./../../components/AlbumList/AlbumList";
 
+import * as stateTypes from "./../../stateTypes";
+
 class SavedAlbums extends Component {
 
     constructor(props) {
@@ -172,13 +174,15 @@ class SavedAlbums extends Component {
         })
     }
 
+    // * Update filter option state
     onChangeFilterState = (filter_status) => {
-        if (filter_status === "have" || filter_status === "want") {
+        if (filter_status === stateTypes.HAVE || filter_status === stateTypes.WANT) {
             if (filter_status === this.state.filter_status) filter_status = "";
             this.setState({ filter_status })
         }
     }
 
+    // * update filter text
     updateFilterText = (e) => {
         let filter_text = e.target.value;
 
@@ -187,85 +191,85 @@ class SavedAlbums extends Component {
         });
     };
 
+    // * handle text filtering items
+    filterItemsByText = (array, filter_text) => {
+        return array.filter(album => {
+            return album.name.toLowerCase().includes(filter_text) ||
+                album.artists.some((artist) => {
+                    return (
+                        artist.name
+                            .toLowerCase()
+                            .indexOf(filter_text) > -1
+                    );
+                });
+        });
+    }
+
+    // * handle status filtering items
+    filterItemsByStatus = (array, filter_status) => {
+        let filtered_ids = this.props.saved_album_ids.flat().filter(album => album.status === filter_status);
+        return array.filter((album) => {
+            return (
+                filtered_ids.find(a => a.album_id === album.id)
+            )
+        });
+    }
+
     render() {
+        // * get albums (assumed filtered (including not filtered))
         let filtered_albums = this.props.saved_album_data.flat();
-        if (this.state.filter_text !== "") {
-            filtered_albums = filtered_albums.filter((album) => {
-                // * search if in album title or album artist contains matching string
-                return (
-                    album.name.toLowerCase().includes(this.state.filter_text) ||
-                    album.artists.some((artist) => {
-                        return (
-                            artist.name
-                                .toLowerCase()
-                                .indexOf(this.state.filter_text) > -1
-                        );
-                    })
-                );
-            });
+
+        // * if filter status, then filter by status
+        if (this.state.filter_status !== "") {
+            filtered_albums = this.filterItemsByStatus(filtered_albums, this.state.filter_status);
         }
 
-        if (this.state.filter_status !== "") {
-            let filtered_ids = this.props.saved_album_ids.flat().filter(album => album.status === this.state.filter_status);
-            filtered_albums = filtered_albums.filter((album) => {
-                return (
-                    filtered_ids.find(a => a.album_id === album.id)
-                )
-            });
+        // * if filter text, then do filter
+        if (this.state.filter_text !== "") {
+            filtered_albums = this.filterItemsByText(filtered_albums, this.state.filter_text.toLocaleLowerCase());
         }
+
+        // * create ordering buttons
+        const order_buttons = [orderTypes.ORDER_AZ, orderTypes.ORDER_ZA].map((order) => {
+            return <Button
+                key={order}
+                className={
+                    (this.props.ordering === order
+                        ? "is-primary"
+                        : "is-info").concat(
+                            this.state.is_reordering ? " is-loading" : ""
+                        )
+                }
+                content={order.toUpperCase()}
+                onClick={
+                    this.props.ordering !== order ?
+                        () => this.onChangeOrdering(order) : null}
+            />
+        });
+
+        const status_buttons = [stateTypes.HAVE, stateTypes.WANT].map((status) => {
+            return <Button
+                key={status}
+                className={
+                    this.state.filter_status === status
+                        ? "is-primary"
+                        : "is-info"
+                }
+                content={status}
+                onClick={() => this.onChangeFilterState(status)}
+            />
+        });
 
         return (
             <div className="section">
                 <Level
                     level_left_content={[
                         <div className="buttons">
-                            <Button
-                                className={
-                                    (this.props.ordering === orderTypes.ORDER_AZ
-                                        ? "is-primary"
-                                        : "is-info").concat(
-                                            this.state.is_reordering ? " is-loading" : ""
-                                        )
-                                }
-                                content="A-Z"
-                                onClick={
-                                    this.props.ordering !== orderTypes.ORDER_AZ ?
-                                        () => this.onChangeOrdering(orderTypes.ORDER_AZ) : null}
-                            />
-                            <Button
-                                className={
-                                    (this.props.ordering === orderTypes.ORDER_ZA
-                                        ? "is-primary"
-                                        : "is-info").concat(
-                                            this.state.is_reordering ? " is-loading" : ""
-                                        )
-                                }
-                                content="Z-A"
-                                onClick={
-                                    this.props.ordering !== orderTypes.ORDER_ZA ?
-                                        () => this.onChangeOrdering(orderTypes.ORDER_ZA) : null}
-                            />
-                            <Button
-                                className={
-                                    this.state.filter_status === "have"
-                                        ? "is-primary"
-                                        : "is-info"
-                                }
-                                content="Have"
-                                onClick={() => this.onChangeFilterState("have")}
-                            />
-                            <Button
-                                className={
-                                    this.state.filter_status === "want"
-                                        ? "is-primary"
-                                        : "is-info"
-                                }
-                                content="Want"
-                                onClick={() => this.onChangeFilterState("want")}
-                            />
+                            {order_buttons}
+                            {status_buttons}
                         </div>,
                         <Input
-                            onchange={this.updateFilterText}
+                            onChange={this.updateFilterText}
                             value={this.state.filter_text}
                         />,
                     ]}
@@ -277,13 +281,11 @@ class SavedAlbums extends Component {
                     ]}
                 />
                 {filtered_albums.length ? (
-                    <AlbumList layout_classname={"is-full-mobile is-half-tablet is-one-third-desktop is-one-quarter-widescreen"} albums={filtered_albums} />
+                    <AlbumList layout_classname={this.props.layout_classname} albums={filtered_albums} />
                 ) : null}
-                {/* {this.props.saved_album_ids_total !== this.props.saved_album_data_total ? ( */}
                 <div className="lazy-loader" ref={this.lazy_loader_ref}>
                     {this.state.is_requesting ? <div className="section"><p className="has-text-centered">Loading more...</p></div> : null}
                 </div>
-                {/* ) : null} */}
             </div>
         );
     }

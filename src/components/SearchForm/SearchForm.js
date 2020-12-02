@@ -36,10 +36,7 @@ class SearchForm extends Component {
         });
     };
 
-    handleClick = () => {
-        // * validate
-        if (this.state.search_text === "") return;
-
+    handleSubmit = () => {
         let result_type = this.state.search_type;
         // * send search request
 
@@ -62,6 +59,12 @@ class SearchForm extends Component {
                 });
             })
             .catch((err) => console.log(err));
+    }
+
+    handleClick = () => {
+        // * validate
+        if (this.state.search_text === "") return;
+        this.handleSubmit();
     };
 
     handleSelectChange = (e) => {
@@ -75,7 +78,8 @@ class SearchForm extends Component {
         return (
             <div className="form search-form">
                 <Search
-                    onchange={this.handleTextChange}
+                    onChange={this.handleTextChange}
+                    onSubmit={this.handleSubmit}
                     value={this.state.search_text}
                     label={"Search Term:"}
                 />

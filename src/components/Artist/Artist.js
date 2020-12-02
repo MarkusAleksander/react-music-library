@@ -52,7 +52,6 @@ class Artist extends Component {
                 this.setState({
                     artist_details: res.data
                 });
-                this.toggleModal();
             }
         };
         onError = (error) => {
@@ -63,6 +62,8 @@ class Artist extends Component {
             .get(endpoint, options)
             .then(onResponse)
             .catch(onError);
+
+        this.toggleModal();
     }
 
 
@@ -108,9 +109,12 @@ class Artist extends Component {
                     content={<p>{this.props.artist.artist_title}</p>}
                     footer={null}
                 />
-                {this.state.modal_is_open && this.state.artist_details !== null ?
+                {this.state.modal_is_open ?
                     <Modal onclose={this.toggleModal}>
-                        <ArtistDetails artist={this.props.artist} artist_details={this.state.artist_details} />
+                        {this.state.artist_details !== null ?
+                            <ArtistDetails artist={this.props.artist} artist_details={this.state.artist_details} />
+                            : <p>Loading details...</p>
+                        }
                     </Modal> : null
                 }
             </Auxillary>

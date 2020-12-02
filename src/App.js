@@ -25,6 +25,8 @@ import {
 import "bulma/css/bulma.css";
 import "./App.css";
 
+const layout_classname = "is-full-mobile is-half-tablet is-one-third-desktop is-one-quarter-widescreen";
+
 class App extends Component {
     constructor(props) {
         super(props);
@@ -35,7 +37,6 @@ class App extends Component {
     }
 
     componentDidMount() {
-        console.log("[App:componentDidMount]");
         axios
             .get(REQUEST_SPOTIFY_TOKEN)
             .then((res) => {
@@ -46,9 +47,6 @@ class App extends Component {
                     config.params["spotify_grant_token"] = res.data;
                     return config;
                 });
-                console.log(
-                    "[App:componentDidMount: updating spotify request token]"
-                );
                 this.setState({
                     has_spotify_REQUEST_SPOTIFY_TOKEN: true,
                 });
@@ -81,8 +79,8 @@ class App extends Component {
                 </Header>
                 <Switch>
                     <Route path="/search" component={Search} />
-                    <Route path="/artists" component={SavedArtists} />
-                    <Route path="/albums" component={SavedAlbums} />
+                    <Route path="/artists" render={() => <SavedArtists layout_classname={layout_classname} />} />
+                    <Route path="/albums" render={() => <SavedAlbums layout_classname={layout_classname} />} />
                     <Route path="/" exact component={Search} />
                 </Switch>
             </div>

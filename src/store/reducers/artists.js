@@ -33,15 +33,25 @@ const storeSavedArtistIDs = (state, action) => {
     )
 }
 
-const storeSavedArtistData = (state, action) => {
-    let new_array = state.saved_artist_data.flat().concat(action.saved_artist_data);
-    let next_requestable_set = state.next_requestable_set >= state.saved_artist_ids.length ? state.next_requestable_set : state.next_requestable_set + 1;
+const storeSavedArtistData = (state, action) => {    // TODO - LOGIC EDGE ERROR TO RESOLVE
+    let old_array_length = state.saved_artist_data.length;
+
+    let updated_array = state.saved_artist_data.flat().concat(action.saved_artist_data);
+    let new_array = chunkArray(updated_array);
+
+    let new_array_length = new_array.length;
+
+    let next_requestable_set = state.next_requestable_set;
+
+    if (new_array_length > old_array_length && state.next_requestable_set < state.saved_artist_ids.length) {
+        next_requestable_set = state.next_requestable_set >= state.saved_artist_ids.length ? state.next_requestable_set : state.next_requestable_set + 1;
+    }
 
     return updateObject(
         state,
         {
-            saved_artist_data: chunkArray(new_array),
-            saved_artist_data_total: new_array.length,
+            saved_artist_data: chunkArray(updated_array),
+            saved_artist_data_total: updated_array.length,
             next_requestable_set
         }
     )

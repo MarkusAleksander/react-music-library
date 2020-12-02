@@ -15,14 +15,12 @@ class Navigation extends Component {
     render() {
         return (
             <nav
-                className="navbar"
+                className="navbar is-fixed-top"
                 role="navigation"
                 aria-label="main navigation"
             >
                 <div className="navbar-brand">
-                    <NavLink className="navbar-item" to="/">
-                        M
-                    </NavLink>
+                    <a href="https://markholden.co.uk" className="navbar-item" target="_blank" rel="noopener noreferrer">M</a>
 
                     <button
                         className={
@@ -48,11 +46,11 @@ class Navigation extends Component {
                     }
                 >
                     <div className="navbar-start">
-                        <NavLink to="/albums" className="navbar-item">
+                        <NavLink to="/albums" className="navbar-item is-tab" activeClassName="is-active">
                             Saved Albums
                         </NavLink>
 
-                        <NavLink to="/artists" className="navbar-item">
+                        <NavLink to="/artists" className="navbar-item is-tab" activeClassName="is-active">
                             Saved Artists
                         </NavLink>
                     </div>
@@ -62,7 +60,7 @@ class Navigation extends Component {
                             <div className="buttons">
                                 <NavLink
                                     to="/search"
-                                    className="button is-light"
+                                    className="button is-primary"
                                 >
                                     Search
                                 </NavLink>

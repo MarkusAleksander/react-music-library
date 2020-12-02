@@ -47,6 +47,10 @@ export const request_saved_album_data = (onComplete) => {
         // * get the current album state
         let state = getState().albums;
 
+        if (state.next_requestable_set > 13) {
+            debugger;
+        }
+
         // * set up array to hold ids we want data on
         let requested_ids = [];
 
@@ -85,6 +89,10 @@ export const request_saved_album_data = (onComplete) => {
             // * we have an id:data mismatch and
             // * the (chunked) id length is NOT equal to the (chunked) data length
             // * then we need to request the next requestable chunk
+            if (!state.saved_album_ids[state.next_requestable_set]) {
+                alert("Attempting to access out of bound array");
+                debugger;
+            }
             requested_ids = state.saved_album_ids[state.next_requestable_set].map(album => album.album_id);
         }
 

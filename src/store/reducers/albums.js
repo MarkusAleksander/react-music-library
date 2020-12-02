@@ -34,14 +34,25 @@ const storeSavedAlbumIDs = (state, action) => {
 }
 
 const storeSavedAlbumData = (state, action) => {
-    let new_array = state.saved_album_data.flat().concat(action.saved_album_data)
-    let next_requestable_set = state.next_requestable_set >= state.saved_album_ids.length ? state.next_requestable_set : state.next_requestable_set + 1;
+    // TODO - LOGIC EDGE ERROR TO RESOLVE
+    let old_array_length = state.saved_album_data.length;
+
+    let updated_array = state.saved_album_data.flat().concat(action.saved_album_data);
+    let new_array = chunkArray(updated_array);
+
+    let new_array_length = new_array.length;
+
+    let next_requestable_set = state.next_requestable_set;
+
+    if (new_array_length > old_array_length && state.next_requestable_set < state.saved_album_ids.length) {
+        next_requestable_set = state.next_requestable_set >= state.saved_album_ids.length ? state.next_requestable_set : state.next_requestable_set + 1;
+    }
 
     return updateObject(
         state,
         {
-            saved_album_data: chunkArray(new_array),
-            saved_album_data_total: new_array.length,
+            saved_album_data: chunkArray(updated_array),
+            saved_album_data_total: updated_array.length,
             next_requestable_set
         }
     );

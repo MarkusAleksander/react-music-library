@@ -172,6 +172,7 @@ class SavedArtists extends Component {
         });
     }
 
+    // * update filter text
     updateFilterTest = (e) => {
         let filter_text = e.target.value;
 
@@ -180,49 +181,52 @@ class SavedArtists extends Component {
         });
     };
 
+    // * handle text filtering items
+    filterItemsByText = (array, filter_text) => {
+        return array.filter((artist) => {
+            return (
+                artist.name.toLowerCase().includes(filter_text)
+            )
+        });
+    }
+
     render() {
+        // * get artists (assume filtered (including not filtered))
         let filtered_artists = this.props.saved_artist_data.flat();
+
+        // * if filter text, then do filter
         if (this.state.filter_text !== "") {
-            filtered_artists = filtered_artists.filter((artist) =>
-                artist.name.toLowerCase().includes(this.state.filter_text)
-            );
+            filtered_artists = this.filterItemsByText(filtered_artists, this.state.filter_text.toLocaleLowerCase());
         }
+
+        // * create ordering buttons
+        const order_buttons = [orderTypes.ORDER_AZ, orderTypes.ORDER_ZA].map((order) => {
+            return <Button
+                key={order}
+                className={
+                    (this.props.ordering === order
+                        ? "is-primary"
+                        : "is-info").concat(
+                            this.state.is_ordering ? " is-loading" : ""
+                        )
+                }
+                content={order.toUpperCase()}
+                onClick={
+                    this.props.ordering !== order ?
+                        () => this.onChangeOrdering(order) : null
+                }
+            />
+        });
 
         return (
             <div className="section">
                 <Level
                     level_left_content={[
                         <div className="buttons">
-                            <Button
-                                className={
-                                    (this.props.ordering === orderTypes.ORDER_AZ
-                                        ? "is-primary"
-                                        : "is-info").concat(
-                                            this.state.is_reordering ? " is-loading" : ""
-                                        )
-                                }
-                                content="A-Z"
-                                onClick={
-                                    this.props.ordering !== orderTypes.ORDER_AZ ?
-                                        () => this.onChangeOrdering(orderTypes.ORDER_AZ) : null
-                                }
-                            />
-                            <Button
-                                className={
-                                    (this.props.ordering === orderTypes.ORDER_ZA
-                                        ? "is-primary"
-                                        : "is-info").concat(
-                                            this.state.is_reordering ? " is-loading" : ""
-                                        )
-                                }
-                                content="Z-A"
-                                onClick={
-                                    this.props.ordering !== orderTypes.ORDER_ZA ?
-                                        () => this.onChangeOrdering(orderTypes.ORDER_ZA) : null}
-                            />
+                            {order_buttons}
                         </div>,
                         <Input
-                            onchange={this.updateFilterTest}
+                            onChange={this.updateFilterTest}
                             value={this.state.filter_text}
                         />,
                     ]}
@@ -234,13 +238,11 @@ class SavedArtists extends Component {
                     ]}
                 />
                 {filtered_artists.length ? (
-                    <ArtistList layout_classname={"is-full-mobile is-half-tablet is-one-third-desktop is-one-quarter-widescreen"} artists={filtered_artists} />
+                    <ArtistList layout_classname={this.props.layout_classname} artists={filtered_artists} />
                 ) : null}
-                {/* {this.props.saved_artist_ids_total !== this.props.saved_artist_data_total ? ( */}
                 <div className="lazy-loader" ref={this.lazy_loader_ref}>
                     {this.state.is_requesting ? <div className="section"><p className="has-text-centered">Loading more...</p></div> : null}
                 </div>
-                {/* ) : null} */}
             </div>
         );
     }
@@ -258,10 +260,6 @@ const mapDispatchToProps = (dispatch) => {
                 actionCreators.handle_artist_ordering_update(ordering, onComplete)
             )
         }
-        // onStoreArtistData: (saved_artist_data) =>
-        //     dispatch(
-        //         actionCreators.store_saved_artist_data(saved_artist_data)
-        //     ),
     };
 };
 

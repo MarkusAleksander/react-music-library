@@ -84,6 +84,10 @@ export const request_saved_artist_data = (onComplete) => {
             // * we have an id:data mismatch and
             // * the (chunked) id length is NOT equal to the (chunked) data length
             // * then we need to request the next requestable chunk
+            if (!state.saved_artist_ids[state.next_requestable_set]) {
+                alert("Attempting to access out of bound array");
+                debugger;
+            }
             requested_ids = state.saved_artist_ids[state.next_requestable_set].map(artist => artist.artist_id);
         }
 

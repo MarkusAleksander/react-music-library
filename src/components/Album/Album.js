@@ -4,25 +4,20 @@ import LazyImage from "./../UI/LazyImage/LazyImage";
 import Card from "./../UI/Card/Card";
 import Auxillary from "../../hoc/Auxillary";
 
+import * as stateTypes from "./../../stateTypes";
+
 const Album = (props) => {
-    const actions = [
-        {
-            onClick: () => props.on_action(props.album, "want"),
-            content: "Want",
+
+    const actions = [stateTypes.WANT, stateTypes.HAVE].map((state) => {
+        return {
+            onClick: () => props.on_action(props.album, state),
+            content: state,
             status: props.album.status,
             className:
-                (props.album.status === "want" ? "is-primary" : "is-info") +
+                (props.album.status === state ? "is-primary" : "is-info") +
                 (props.album.status === "loading" ? " is-loading" : ""),
-        },
-        {
-            onClick: () => props.on_action(props.album, "have"),
-            content: "Have",
-            status: props.album.status,
-            className:
-                (props.album.status === "have" ? "is-primary" : "is-info") +
-                (props.album.status === "loading" ? " is-loading" : ""),
-        },
-    ];
+        }
+    });
 
     return (
         <Card
